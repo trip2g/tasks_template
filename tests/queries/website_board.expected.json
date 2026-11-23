@@ -26,7 +26,7 @@
          "blocked": "",
          "disposition": "active",
          "done": "",
-         "due": "",
+         "due": "after the launch",
          "due_date": false,
          "overdue": false,
          "owner": "Maya",

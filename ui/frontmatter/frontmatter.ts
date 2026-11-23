@@ -26,6 +26,7 @@ namespace $ {
 	}
 
 	function plain_safe(value: string) {
+		if (/^\d{4}-\d{2}-\d{2}$/.test(value)) return true
 		if (value === '' || value.trim() !== value) return false
 		if (/^[-?:,\[\]{}#&*!|>'"%@`]/.test(value)) return false
 		if (/: |\s#/.test(value)) return false

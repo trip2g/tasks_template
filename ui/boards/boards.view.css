@@ -17,7 +17,14 @@
 }
 
 [trip2gtasks_boards_board_cell] {
-	flex: 1 1 14rem;
+	flex: 0 0 16rem;
+}
+
+[trip2gtasks_boards_decision_cell],
+[trip2gtasks_boards_overdue_cell],
+[trip2gtasks_boards_owner_cell],
+[trip2gtasks_boards_due_cell] {
+	flex: 0 0 8rem;
 }
 
 [trip2gtasks_boards_status_cell] {

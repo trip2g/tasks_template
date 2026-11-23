@@ -381,7 +381,7 @@ namespace $.$$ {
 
 			switch (res.__typename) {
 				case 'UpdateNotesSuccessPayload': {
-					const warnings = res.updated.flatMap(note => note.warnings.map(warning => `${warning.level}: ${warning.message}`))
+					const warnings = res.updated.flatMap(note => note.warnings.filter(warning => warning.level !== 'INFO').map(warning => `${warning.level}: ${warning.message}`))
 					if (warnings.length) this.notice({ title: this.saved_warning_label(), text: warnings.join('\n'), tone: 'warn' })
 					return
 				}

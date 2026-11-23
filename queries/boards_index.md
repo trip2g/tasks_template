@@ -48,7 +48,7 @@ local summary(b) =
     total: std.length(mine),
     overdue: std.length([n for n in open if overdue(n)]),
     no_owner: std.length([n for n in open if field(n, 'owner') == '']),
-    no_due: std.length([n for n in open if field(n, 'due') == '']),
+    no_due: std.length([n for n in open if !isDate(field(n, 'due'))]),
     blocked: std.length([n for n in open if field(n, 'blocked') != '']),
     needs_decision: std.length([n for n in open if decision(n)]),
   };
