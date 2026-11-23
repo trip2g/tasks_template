@@ -7,7 +7,7 @@ Measured on a local trip2g (main `e7ae338c`): the trip2g corner sits at top 8 px
 - `before-boards-light-desktop.png` — before: «All boards» title at 24 px, rows at 36 px, title lower than the corner.
 - `after-board-dark-desktop.png` — task: header on the corner's line, one left edge, no light square — title, owner filter, search and the corner's icons share one 40 px row 8 px from the top; title and columns start at 24 px; the menu button has no square, dark.
 - `after-board-light-desktop.png` — task: the same in the light theme.
-- `after-board-light-mobile.png` — task: 390 px, light — the title on the corner's row; filter, search, hint and columns all start at 24 px.
+- `after-board-light-mobile.png` — task: 390 px, light — the title on the corner's row; the second row holds the owner filter (from 24 px) and the search right after it; the hint and columns start at 24 px.
 - `after-board-dark-mobile.png` — task: 390 px, dark — the same.
 - `after-boards-light-desktop.png` — task: page of all boards — title on the corner's row; title and rows start at 24 px.
 - `after-boards-light-mobile.png` — task: page of all boards at 390 px — the same.
