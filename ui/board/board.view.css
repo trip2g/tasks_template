@@ -176,7 +176,8 @@
 		flex: 1 1 auto;
 	}
 
-	[trip2gtasks_board_owner_trigger][mol_button_minor] {
+	[trip2gtasks_board_owner_trigger][mol_button_minor],
+	[trip2gtasks_board_owner_option_label][mol_dimmer] {
 		padding-left: 0;
 	}
 
