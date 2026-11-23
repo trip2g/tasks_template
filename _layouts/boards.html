@@ -5,9 +5,18 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>{{ title }}</title>
   <style>
+    :root {
+      --trip2gtasks_corner_top: 8px;
+      --trip2gtasks_corner_right: 12px;
+      --trip2gtasks_corner_height: 40px;
+      --trip2gtasks_corner_width: 160px;
+      --trip2gtasks_corner_reserve: calc(var(--trip2gtasks_corner_right) + var(--trip2gtasks_corner_width) + 12px);
+      --trip2gtasks_gutter: 24px;
+    }
     html, body { margin: 0; padding: 0; height: 100%; overflow: hidden; }
     .tasks-frame { position: fixed; inset: 0; width: 100%; height: 100%; border: 0; display: block; }
-    .tasks-corner { position: fixed; top: 8px; right: 12px; z-index: 2; }
+    .tasks-corner { position: fixed; top: var(--trip2gtasks_corner_top); right: var(--trip2gtasks_corner_right); height: var(--trip2gtasks_corner_height); z-index: 2; }
+    .tasks-corner [mol_theme="$mol_theme_base"] { --mol_theme_back: transparent; --mol_theme_text: var(--mol_theme_control); }
   </style>
   {{ defaultTemplate.UserSpaceScripts() }}
 </head>
@@ -20,7 +29,12 @@
       var bundle = 'https://github.com/trip2g/tasks_template/releases/latest/download/tasks.js'
       var data = JSON.parse(document.getElementById('tasks-data').textContent)
       window.__trip2gtasks = data
+      var root = getComputedStyle(document.documentElement)
+      var geometry = ['corner_top', 'corner_right', 'corner_height', 'corner_width', 'corner_reserve', 'gutter'].map(function (name) {
+        return '--trip2gtasks_' + name + ':' + root.getPropertyValue('--trip2gtasks_' + name).trim()
+      }).join(';')
       document.getElementById('tasks-frame').srcdoc = '<!doctype html><html><head><meta charset="utf-8">'
+        + '<style>:root{' + geometry + '}</style>'
         + '<meta name="viewport" content="width=device-width, initial-scale=1"></head>'
         + '<body style="margin:0;height:100vh"><div mol_view_root="' + data.root + '" style="height:100vh"></div>'
         + '<script src="' + bundle + '"><\/script></body></html>'
