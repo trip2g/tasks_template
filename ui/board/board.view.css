@@ -25,7 +25,8 @@
 }
 
 [trip2gtasks_board_column] {
-	flex: 0 0 min(15rem, 80vw);
+	flex: 1 0 min(14rem, 80vw);
+	max-width: 22rem;
 	border-radius: var(--airkit_radius);
 	background: var(--airkit_ground);
 }

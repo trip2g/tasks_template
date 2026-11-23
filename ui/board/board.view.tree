@@ -93,4 +93,5 @@ $trip2gtasks_board $mol_book2
 	query_failed_label @ \The board query failed
 	conflict_label @ \The task changed elsewhere, the board reloaded it
 	refused_label @ \The move was not saved
+	no_rights_label @ \The site refused it; moving cards needs a signed-in admin. The server said: {reason}
 	saved_warning_label @ \Saved with a warning

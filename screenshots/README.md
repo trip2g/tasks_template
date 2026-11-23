@@ -1,6 +1,6 @@
 # Screenshots
 
-Taken on a local trip2g (main, `a2fc7061`) with the `example/` vault, 2026-11-23. Each line names what the picture proves.
+Taken on a local trip2g (main, `a2fc7061`) with the `example/` vault, 2026-11-23. Each line names what the picture proves. The task note in the side panel is the site's own page for that note, drawn in the site's theme, which here is dark.
 
 - `01-board-light-desktop.png` — task: board `layout: tasks` — columns by status with cards showing owner, due (overdue in red), blocked reason, pause, light scheme, desktop.
 - `02-board-dark-desktop.png` — task: dark scheme — the same board in the dark scheme.
@@ -16,5 +16,6 @@ Taken on a local trip2g (main, `a2fc7061`) with the `example/` vault, 2026-11-23
 - `11-boards-dark-mobile.png` — task: all boards on mobile, dark — the same page at 390 px.
 - `12-guest-read-only.png` — task: read-only for visitors — a signed-out visitor sees the cards and «Sign in to move cards», the sign-in button in the corner.
 - `13-conflict-reloaded.png` — task: on a conflict the board reloads — the note was changed from outside, the drag was not written, the board says so and shows the card where the note says.
-- `14-refused-reverted.png` — task: on a refusal the card goes back with a message — the session was dropped before the drag; the card is back in Inbox and the board shows the server's refusal.
-- `15-mobile-move-by-switch.png` — task: changing status without drag on a phone — «Planned» picked in the task panel's column switch.
+- `14-refused-reverted.png` — task: on a refusal the card goes back with a message — the session was dropped, then «Collect testimonials» was dragged from Inbox to Done; it stands in Inbox again and the board says the site refused the save and why.
+- `15-mobile-move-by-switch.png` — task: changing status without drag on a phone — «Planned» picked in the task panel's column switch for «Collect testimonials».
+- `16-board-after-switch.png` — task: the switch saved the status — the reloaded board shows «Collect testimonials» in Planned, Inbox empty.

@@ -352,7 +352,8 @@ namespace $.$$ {
 			} catch (error) {
 				if ($mol_promise_like(error)) $mol_fail_hidden(error)
 				this.forget(path)
-				this.notice({ title: this.refused_label(), text: (error as Error).message, tone: 'bad' })
+				const reason = error instanceof $trip2gtasks_gql_error ? this.no_rights_label().replace('{reason}', error.message) : (error as Error).message
+				this.notice({ title: this.refused_label(), text: reason, tone: 'bad' })
 			}
 		}
 

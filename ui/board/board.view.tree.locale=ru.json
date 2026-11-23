@@ -15,5 +15,6 @@
 	"$trip2gtasks_board_query_failed_label": "Запрос доски не выполнился",
 	"$trip2gtasks_board_conflict_label": "Задачу изменили в другом месте, доска перечитала её",
 	"$trip2gtasks_board_refused_label": "Перемещение не сохранено",
-	"$trip2gtasks_board_saved_warning_label": "Сохранено с предупреждением"
+	"$trip2gtasks_board_saved_warning_label": "Сохранено с предупреждением",
+	"$trip2gtasks_board_no_rights_label": "Сайт отказал: двигать карточки может только вошедший администратор. Ответ сервера: {reason}"
 }

@@ -5,9 +5,8 @@ namespace $ {
 	}
 
 	export class $trip2gtasks_gql_error extends Error {
-		constructor(message: string, public detail?: { message: string, path?: string[] }[]) {
-			for (const err of detail ?? []) message += `. ${err.message}`
-			super(message)
+		constructor(public detail: { message: string, path?: string[] }[]) {
+			super(detail.map(err => err.message).join('. '))
 		}
 	}
 
@@ -37,7 +36,7 @@ namespace $ {
 			body: JSON.stringify({ query, variables }),
 		}) as { data?: unknown, errors?: { message: string, path?: string[] }[] }
 
-		if (res.errors) throw new $trip2gtasks_gql_error('GraphQL Error', res.errors)
+		if (res.errors) throw new $trip2gtasks_gql_error(res.errors)
 
 		if (mutation && revalidate) $trip2gtasks_gql_marker_bump()
 
