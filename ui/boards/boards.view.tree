@@ -1,0 +1,43 @@
+$trip2gtasks_boards $mol_page
+	plugins /
+		<= Theme $mol_theme_auto
+		<= Air $airkit_air
+	title <= page_title \
+	body <= boards_body /
+	Problem $airkit_problem
+		title <= query_failed_label @ \The boards query failed
+		text <= problem_text \
+	Empty $mol_paragraph
+		title <= empty_label @ \No note has layout: tasks yet.
+	Rows $mol_list
+		rows <= rows /
+	Row* $mol_link
+		uri <= row_uri* \
+		target \_top
+		sub /
+			<= Row_cells* $mol_row
+				sub <= row_cells* /
+	Board_cell* $mol_labeler
+		title <= board_label @ \Board
+		content / <= row_title* \
+	Decision_cell* $mol_labeler
+		title <= decision_label @ \Needs a decision
+		content / <= Decision_pill* $airkit_pill
+			title <= row_decision* \
+			tone <= row_decision_tone* \neutral
+	Overdue_cell* $mol_labeler
+		title <= overdue_label @ \Overdue
+		content / <= row_overdue* \
+	Owner_cell* $mol_labeler
+		title <= no_owner_label @ \No owner
+		content / <= row_no_owner* \
+	Due_cell* $mol_labeler
+		title <= no_due_label @ \No due date
+		content / <= row_no_due* \
+	Status_cell* $mol_labeler
+		title <= status_label @ \By status
+		content / <= row_statuses* \
+	other_label @ \other
+	Custom_cell* $mol_labeler
+		title <= counts_label @ \Counts
+		content / <= custom_label @ \Its own query: no counts

@@ -1,0 +1,41 @@
+{
+   "columns": [
+      "Inbox",
+      "Planned",
+      "In progress",
+      "Blocked",
+      "Done"
+   ],
+   "done_column": "Done",
+   "tasks": [
+      {
+         "blocked": "",
+         "disposition": "active",
+         "done": "",
+         "due": "2026-11-21",
+         "due_date": true,
+         "overdue": true,
+         "owner": "",
+         "path": "tasks/website/Fix the contact form on mobile.md",
+         "permalink": "/tasks/website/fix_the_contact_form_on_mobile",
+         "project": "Website",
+         "status": "Planned",
+         "title": "Fix the contact form on mobile"
+      },
+      {
+         "blocked": "waiting for the photographer's final files",
+         "disposition": "active",
+         "done": "",
+         "due": "2026-11-20",
+         "due_date": true,
+         "overdue": true,
+         "owner": "Leo",
+         "path": "tasks/website/Replace the hero photo.md",
+         "permalink": "/tasks/website/replace_the_hero_photo",
+         "project": "Website",
+         "status": "Blocked",
+         "title": "Replace the hero photo"
+      }
+   ],
+   "today": "2026-11-23"
+}

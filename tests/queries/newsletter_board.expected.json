@@ -1,0 +1,54 @@
+{
+   "columns": [
+      "Inbox",
+      "Planned",
+      "In progress",
+      "Done"
+   ],
+   "done_column": "Done",
+   "tasks": [
+      {
+         "blocked": "",
+         "disposition": "active",
+         "done": "",
+         "due": "2026-11-25",
+         "due_date": true,
+         "overdue": false,
+         "owner": "Sam",
+         "path": "tasks/newsletter/Clean the subscriber list.md",
+         "permalink": "/tasks/newsletter/clean_the_subscriber_list",
+         "project": "Newsletter",
+         "status": "In review",
+         "title": "Clean the subscriber list"
+      },
+      {
+         "blocked": "",
+         "disposition": "active",
+         "done": "",
+         "due": "",
+         "due_date": false,
+         "overdue": false,
+         "owner": "",
+         "path": "tasks/newsletter/Pick a sending day.md",
+         "permalink": "/tasks/newsletter/pick_a_sending_day",
+         "project": "Newsletter",
+         "status": "Inbox",
+         "title": "Pick a sending day"
+      },
+      {
+         "blocked": "",
+         "disposition": "active",
+         "done": "",
+         "due": "2026-12-01",
+         "due_date": true,
+         "overdue": false,
+         "owner": "Sam",
+         "path": "tasks/newsletter/Write the December issue.md",
+         "permalink": "/tasks/newsletter/write_the_december_issue",
+         "project": "Newsletter",
+         "status": "Planned",
+         "title": "Write the December issue"
+      }
+   ],
+   "today": "2026-11-23"
+}

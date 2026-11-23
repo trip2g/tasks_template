@@ -1,0 +1,11 @@
+query ($input: NoteQueryInput!) {
+  noteQuery(input: $input) {
+    __typename
+    ... on NoteQueryPayload {
+      result
+    }
+    ... on ErrorPayload {
+      message
+    }
+  }
+}

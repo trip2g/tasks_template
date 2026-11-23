@@ -1,0 +1,7 @@
+query ($paths: [String!]) {
+  notePaths(filter: { paths: $paths }) {
+    value
+    content
+    latestContentHash
+  }
+}

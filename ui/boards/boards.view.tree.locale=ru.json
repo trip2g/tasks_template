@@ -1,0 +1,13 @@
+{
+	"$trip2gtasks_boards_query_failed_label": "Запрос списка досок не выполнился",
+	"$trip2gtasks_boards_empty_label": "Пока нет ни одной заметки с layout: tasks.",
+	"$trip2gtasks_boards_board_label": "Доска",
+	"$trip2gtasks_boards_decision_label": "Нужно решение",
+	"$trip2gtasks_boards_overdue_label": "Просрочено",
+	"$trip2gtasks_boards_no_owner_label": "Без владельца",
+	"$trip2gtasks_boards_no_due_label": "Без срока",
+	"$trip2gtasks_boards_status_label": "По статусам",
+	"$trip2gtasks_boards_counts_label": "Счётчики",
+	"$trip2gtasks_boards_custom_label": "Свой запрос: счётчиков нет",
+	"$trip2gtasks_boards_other_label": "другие"
+}

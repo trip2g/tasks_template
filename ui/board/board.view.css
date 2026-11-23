@@ -1,0 +1,132 @@
+[trip2gtasks_board] {
+	background: var(--mol_theme_back);
+	color: var(--mol_theme_text);
+}
+
+[trip2gtasks_board_board_page] {
+	flex: 1 1 auto;
+}
+
+[trip2gtasks_board_board_page_head] {
+	flex-wrap: wrap;
+}
+
+[trip2gtasks_board_board_page_tools] {
+	margin-right: 9rem;
+}
+
+[trip2gtasks_board_columns] {
+	display: flex;
+	flex-wrap: nowrap;
+	align-items: flex-start;
+	gap: var(--mol_gap_block);
+	overflow-x: auto;
+	padding-bottom: var(--mol_gap_block);
+}
+
+[trip2gtasks_board_column] {
+	flex: 0 0 min(15rem, 80vw);
+	border-radius: var(--airkit_radius);
+	background: var(--airkit_ground);
+}
+
+[trip2gtasks_board_column][mol_drop_status="drag"] {
+	box-shadow: inset 0 0 0 2px var(--mol_theme_focus);
+}
+
+[trip2gtasks_board_column_box] {
+	padding: var(--mol_gap_block);
+	gap: var(--mol_gap_space);
+	width: 100%;
+}
+
+[trip2gtasks_board_column_head] {
+	justify-content: space-between;
+	font-weight: 600;
+	padding: var(--mol_gap_text);
+}
+
+[trip2gtasks_board_column_count] {
+	color: var(--mol_theme_shade);
+}
+
+[trip2gtasks_board_column_empty] {
+	color: var(--mol_theme_shade);
+	padding: var(--mol_gap_text);
+}
+
+[trip2gtasks_board_card] {
+	border-radius: var(--airkit_radius);
+	background: var(--airkit_card);
+}
+
+[trip2gtasks_board_card][mol_drag_status="drag"] {
+	opacity: .5;
+}
+
+[trip2gtasks_board_card_body] {
+	flex-direction: column;
+	align-items: flex-start;
+	justify-content: flex-start;
+	width: 100%;
+	text-align: left;
+	color: var(--airkit_text);
+	padding: var(--mol_gap_text);
+	cursor: pointer;
+	gap: var(--mol_gap_space);
+}
+
+[trip2gtasks_board_card_title] {
+	white-space: normal;
+}
+
+[trip2gtasks_board_card_marks] {
+	flex-wrap: wrap;
+	gap: var(--mol_gap_space);
+}
+
+[trip2gtasks_board_task_page] {
+	flex: 0 0 min(40rem, 100%);
+}
+
+[trip2gtasks_board_task_move] {
+	flex-wrap: wrap;
+}
+
+[trip2gtasks_board_task_frame] {
+	min-height: 75vh;
+	width: 100%;
+	border-radius: var(--mol_gap_round);
+}
+
+[trip2gtasks_board_card_body]:hover {
+	background: var(--airkit_hover);
+	border-radius: var(--airkit_radius);
+}
+
+[trip2gtasks_board_task_page_tools] {
+	margin-right: 9rem;
+}
+
+@media (max-width: 40rem) {
+	[trip2gtasks_board_board_page_title] {
+		margin-right: 9rem;
+	}
+
+	[trip2gtasks_board_board_page_tools] {
+		margin-right: 0;
+		flex: 1 1 100%;
+	}
+
+	[trip2gtasks_board_search] {
+		flex: 1 1 auto;
+	}
+
+	[trip2gtasks_board_task_page_title] {
+		margin-right: 9rem;
+	}
+
+	[trip2gtasks_board_task_page_tools] {
+		margin-right: 0;
+	}
+}

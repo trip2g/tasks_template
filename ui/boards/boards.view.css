@@ -1,0 +1,35 @@
+[trip2gtasks_boards] {
+	background: var(--mol_theme_back);
+	color: var(--mol_theme_text);
+	height: 100%;
+}
+
+[trip2gtasks_boards_head] {
+	margin-right: 9rem;
+}
+
+[trip2gtasks_boards_rows] {
+	gap: calc(2 * var(--airkit_row_y));
+}
+
+[trip2gtasks_boards_row_cells] {
+	flex-wrap: wrap;
+}
+
+[trip2gtasks_boards_board_cell] {
+	flex: 1 1 14rem;
+}
+
+[trip2gtasks_boards_status_cell] {
+	flex: 1 1 16rem;
+}
+
+@media (max-width: 40rem) {
+	[trip2gtasks_boards_head] {
+		margin-right: 0;
+	}
+
+	[trip2gtasks_boards_title] {
+		margin-right: 9rem;
+	}
+}

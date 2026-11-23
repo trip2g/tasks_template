@@ -1,0 +1,16 @@
+{
+  "name": "trip2g-tasks-template",
+  "private": true,
+  "scripts": {
+    "codegen": "graphql-codegen --config codegen/graphqlgen.js",
+    "build": "./scripts/build.sh",
+    "test": "./scripts/test.sh"
+  },
+  "devDependencies": {
+    "@graphql-codegen/add": "^5.0.3",
+    "@graphql-codegen/cli": "^5.0.7",
+    "@graphql-codegen/typescript": "^4.1.6",
+    "@graphql-codegen/typescript-operations": "^4.6.1",
+    "graphql": "^16.10.0"
+  }
+}

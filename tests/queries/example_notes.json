@@ -1,0 +1,229 @@
+[
+ {
+  "path": "boards/Newsletter.md",
+  "path_id": 1,
+  "version_id": 1,
+  "title": "Newsletter board",
+  "permalink": "/boards/newsletter",
+  "meta": {
+   "title": "Newsletter board",
+   "layout": "tasks",
+   "tasks_filter": {
+    "project": "Newsletter"
+   },
+   "tasks_columns": [
+    "Inbox",
+    "Planned",
+    "In progress",
+    "Done"
+   ]
+  }
+ },
+ {
+  "path": "boards/Overdue.md",
+  "path_id": 2,
+  "version_id": 2,
+  "title": "Overdue everywhere",
+  "permalink": "/boards/overdue",
+  "meta": {
+   "title": "Overdue everywhere",
+   "layout": "tasks",
+   "tasks_query": "[[overdue_tasks]]"
+  }
+ },
+ {
+  "path": "boards/Website.md",
+  "path_id": 3,
+  "version_id": 3,
+  "title": "Website board",
+  "permalink": "/boards/website",
+  "meta": {
+   "title": "Website board",
+   "layout": "tasks",
+   "tasks_filter": {
+    "project": "Website"
+   }
+  }
+ },
+ {
+  "path": "boards.md",
+  "path_id": 4,
+  "version_id": 4,
+  "title": "All boards",
+  "permalink": "/boards",
+  "meta": {
+   "title": "All boards",
+   "layout": "boards"
+  }
+ },
+ {
+  "path": "queries/overdue_tasks.md",
+  "path_id": 5,
+  "version_id": 5,
+  "title": "overdue_tasks",
+  "permalink": "/queries/overdue_tasks",
+  "meta": {
+   "type": "note-query",
+   "free": true
+  }
+ },
+ {
+  "path": "tasks/newsletter/Clean the subscriber list.md",
+  "path_id": 6,
+  "version_id": 6,
+  "title": "Clean the subscriber list",
+  "permalink": "/tasks/newsletter/clean_the_subscriber_list",
+  "meta": {
+   "title": "Clean the subscriber list",
+   "type": "task",
+   "project": "Newsletter",
+   "status": "In review",
+   "owner": "Sam",
+   "due": "2026-11-25",
+   "disposition": "active"
+  }
+ },
+ {
+  "path": "tasks/newsletter/Pick a sending day.md",
+  "path_id": 7,
+  "version_id": 7,
+  "title": "Pick a sending day",
+  "permalink": "/tasks/newsletter/pick_a_sending_day",
+  "meta": {
+   "title": "Pick a sending day",
+   "type": "task",
+   "project": "Newsletter",
+   "status": "Inbox",
+   "disposition": "active"
+  }
+ },
+ {
+  "path": "tasks/newsletter/Write the December issue.md",
+  "path_id": 8,
+  "version_id": 8,
+  "title": "Write the December issue",
+  "permalink": "/tasks/newsletter/write_the_december_issue",
+  "meta": {
+   "title": "Write the December issue",
+   "type": "task",
+   "project": "Newsletter",
+   "status": "Planned",
+   "owner": "Sam",
+   "due": "2026-12-01",
+   "disposition": "active"
+  }
+ },
+ {
+  "path": "tasks/website/Choose a font pair.md",
+  "path_id": 9,
+  "version_id": 9,
+  "title": "Choose a font pair",
+  "permalink": "/tasks/website/choose_a_font_pair",
+  "meta": {
+   "title": "Choose a font pair",
+   "type": "task",
+   "project": "Website",
+   "status": "Done",
+   "owner": "Leo",
+   "done": "2026-10-02",
+   "disposition": "completed"
+  }
+ },
+ {
+  "path": "tasks/website/Collect testimonials.md",
+  "path_id": 10,
+  "version_id": 10,
+  "title": "Collect testimonials",
+  "permalink": "/tasks/website/collect_testimonials",
+  "meta": {
+   "title": "Collect testimonials",
+   "type": "task",
+   "project": "Website",
+   "status": "Inbox",
+   "owner": "Maya",
+   "disposition": "active"
+  }
+ },
+ {
+  "path": "tasks/website/Draft the pricing page.md",
+  "path_id": 11,
+  "version_id": 11,
+  "title": "Draft the pricing page",
+  "permalink": "/tasks/website/draft_the_pricing_page",
+  "meta": {
+   "title": "Draft the pricing page",
+   "type": "task",
+   "project": "Website",
+   "status": "In progress",
+   "owner": "Maya",
+   "due": "2026-11-28",
+   "disposition": "active"
+  }
+ },
+ {
+  "path": "tasks/website/Fix the contact form on mobile.md",
+  "path_id": 12,
+  "version_id": 12,
+  "title": "Fix the contact form on mobile",
+  "permalink": "/tasks/website/fix_the_contact_form_on_mobile",
+  "meta": {
+   "title": "Fix the contact form on mobile",
+   "type": "task",
+   "project": "Website",
+   "status": "Planned",
+   "owner": "",
+   "due": "2026-11-21",
+   "disposition": "active"
+  }
+ },
+ {
+  "path": "tasks/website/Move the blog to the new domain.md",
+  "path_id": 13,
+  "version_id": 13,
+  "title": "Move the blog to the new domain",
+  "permalink": "/tasks/website/move_the_blog_to_the_new_domain",
+  "meta": {
+   "title": "Move the blog to the new domain",
+   "type": "task",
+   "project": "Website",
+   "status": "Planned",
+   "owner": "Leo",
+   "due": "2026-12-15",
+   "disposition": "paused"
+  }
+ },
+ {
+  "path": "tasks/website/Publish the accessibility statement.md",
+  "path_id": 14,
+  "version_id": 14,
+  "title": "Publish the accessibility statement",
+  "permalink": "/tasks/website/publish_the_accessibility_statement",
+  "meta": {
+   "title": "Publish the accessibility statement",
+   "type": "task",
+   "project": "Website",
+   "status": "Done",
+   "owner": "Maya",
+   "due": "2026-11-18",
+   "done": "2026-11-19",
+   "disposition": "completed"
+  }
+ },
+ {
+  "path": "tasks/website/Replace the hero photo.md",
+  "path_id": 15,
+  "version_id": 15,
+  "title": "Replace the hero photo",
+  "permalink": "/tasks/website/replace_the_hero_photo",
+  "meta": {
+   "title": "Replace the hero photo",
+   "type": "task",
+   "project": "Website",
+   "status": "Blocked",
+   "owner": "Leo",
+   "due": "2026-11-20",
+   "blocked": "waiting for the photographer's final files",
+   "disposition": "active"
+  }
+ }
+]

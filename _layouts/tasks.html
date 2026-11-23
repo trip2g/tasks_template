@@ -1,0 +1,30 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>{{ title }}</title>
+  <style>
+    html, body { margin: 0; padding: 0; height: 100%; overflow: hidden; }
+    .tasks-frame { position: fixed; inset: 0; width: 100%; height: 100%; border: 0; display: block; }
+    .tasks-corner { position: fixed; top: 8px; right: 12px; z-index: 2; }
+  </style>
+  {{ defaultTemplate.UserSpaceScripts() }}
+</head>
+<body>
+  <iframe class="tasks-frame" id="tasks-frame" title="{{ note.Title() }}"></iframe>
+  <div class="tasks-corner"><div mol_view_root="$trip2g_user_space"></div></div>
+  <script type="application/json" id="tasks-data">{{ json(map("root", "$trip2gtasks_board", "path", note.Path(), "title", note.Title(), "editable", currentUser.IsAdmin(), "meta", note.M().Raw())) }}</script>
+  <script>
+    (function () {
+      var bundle = 'https://github.com/trip2g/tasks_template/releases/latest/download/tasks.js'
+      var data = JSON.parse(document.getElementById('tasks-data').textContent)
+      window.__trip2gtasks = data
+      document.getElementById('tasks-frame').srcdoc = '<!doctype html><html><head><meta charset="utf-8">'
+        + '<meta name="viewport" content="width=device-width, initial-scale=1"></head>'
+        + '<body style="margin:0;height:100vh"><div mol_view_root="' + data.root + '" style="height:100vh"></div>'
+        + '<script src="' + bundle + '"><\/script></body></html>'
+    })()
+  </script>
+</body>
+</html>

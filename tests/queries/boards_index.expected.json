@@ -1,0 +1,75 @@
+[
+   {
+      "blocked": 1,
+      "columns": [
+         {
+            "count": 1,
+            "status": "Inbox"
+         },
+         {
+            "count": 2,
+            "status": "Planned"
+         },
+         {
+            "count": 1,
+            "status": "In progress"
+         },
+         {
+            "count": 1,
+            "status": "Blocked"
+         },
+         {
+            "count": 2,
+            "status": "Done"
+         }
+      ],
+      "custom": false,
+      "needs_decision": 2,
+      "no_due": 1,
+      "no_owner": 1,
+      "outside": 0,
+      "overdue": 2,
+      "path": "boards/Website.md",
+      "permalink": "/boards/website",
+      "title": "Website board",
+      "total": 7
+   },
+   {
+      "blocked": 0,
+      "columns": [
+         {
+            "count": 1,
+            "status": "Inbox"
+         },
+         {
+            "count": 1,
+            "status": "Planned"
+         },
+         {
+            "count": 0,
+            "status": "In progress"
+         },
+         {
+            "count": 0,
+            "status": "Done"
+         }
+      ],
+      "custom": false,
+      "needs_decision": 1,
+      "no_due": 1,
+      "no_owner": 1,
+      "outside": 1,
+      "overdue": 0,
+      "path": "boards/Newsletter.md",
+      "permalink": "/boards/newsletter",
+      "title": "Newsletter board",
+      "total": 3
+   },
+   {
+      "custom": true,
+      "needs_decision": -1,
+      "path": "boards/Overdue.md",
+      "permalink": "/boards/overdue",
+      "title": "Overdue everywhere"
+   }
+]

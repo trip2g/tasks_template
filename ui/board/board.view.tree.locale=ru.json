@@ -1,0 +1,19 @@
+{
+	"$trip2gtasks_board_Owner_hint": "Владелец",
+	"$trip2gtasks_board_Search_hint": "Поиск по карточкам",
+	"$trip2gtasks_board_Signin_title": "Войдите, чтобы двигать карточки: кнопка входа – в правом верхнем углу.",
+	"$trip2gtasks_board_column_empty": "Нет карточек",
+	"$trip2gtasks_board_Paused_mark_title": "Пауза",
+	"$trip2gtasks_board_task_open_title": "Открыть",
+	"$trip2gtasks_board_everyone_label": "Все",
+	"$trip2gtasks_board_no_owner_label": "Без владельца",
+	"$trip2gtasks_board_no_due_label": "Без срока",
+	"$trip2gtasks_board_overdue_label": "Просрочено: {due}",
+	"$trip2gtasks_board_older_label": "Сделано раньше: {count}",
+	"$trip2gtasks_board_outside_label": "Не колонка этой доски",
+	"$trip2gtasks_board_cancelled_label": "Отменённые, не показаны: {count}",
+	"$trip2gtasks_board_query_failed_label": "Запрос доски не выполнился",
+	"$trip2gtasks_board_conflict_label": "Задачу изменили в другом месте, доска перечитала её",
+	"$trip2gtasks_board_refused_label": "Перемещение не сохранено",
+	"$trip2gtasks_board_saved_warning_label": "Сохранено с предупреждением"
+}

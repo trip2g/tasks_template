@@ -1,0 +1,96 @@
+$trip2gtasks_board $mol_book2
+	plugins /
+		<= Theme $mol_theme_auto
+		<= Air $airkit_air
+	pages <= board_pages /
+	Board_page $mol_page
+		title <= board_title \
+		tools /
+			<= Owner $mol_select
+				hint @ \Owner
+				value? <=> owner_filter? \
+				dictionary <= owner_options *
+			<= Search $mol_search
+				hint @ \Search cards
+				query? <=> search? \
+		body <= board_body /
+	Problem $airkit_problem
+		title <= problem_title \
+		text <= problem_text \
+		tone <= problem_tone \bad
+	Signin $mol_paragraph
+		title @ \Sign in to move cards: the sign-in button is in the top right corner.
+	Columns $mol_view
+		sub <= column_views /
+	Column* $mol_drop
+		enabled <= column_droppable* true
+		adopt? <=> card_adopt? null
+		receive? <=> column_receive*? null
+		Sub <= Column_box* $mol_list
+			rows <= column_rows* /
+	Column_head* $mol_view
+		sub /
+			<= Column_title* $mol_view
+				sub / <= column_title* \
+			<= Column_count* $mol_view
+				sub / <= column_count* \
+	Column_empty* $mol_view
+		sub / <= column_empty* @ \No cards
+	Older* $mol_check_expand
+		title <= older_title* \
+		checked? <=> older_shown*? false
+	Card* $mol_drag
+		draggable <= editable false
+		transfer *
+			text/plain <= card_path* \
+		Sub <= Card_body* $mol_view
+			event *
+				click? <=> card_open*? null
+			attr *
+				role \button
+				tabindex \0
+			sub /
+				<= Card_title* $mol_view
+					sub / <= card_title* \
+				<= Card_marks* $mol_view
+					sub <= card_marks* /
+	Owner_mark* $airkit_pill
+		title <= card_owner* \
+		tone <= card_owner_tone* \neutral
+	Due_mark* $airkit_pill
+		title <= card_due* \
+		tone <= card_due_tone* \neutral
+	Blocked_mark* $airkit_pill
+		title <= card_blocked* \
+		tone \warn
+	Paused_mark* $airkit_pill
+		title @ \Paused
+		tone \neutral
+	Task_page $mol_page
+		title <= task_title \
+		tools /
+			<= Task_open $mol_link
+				uri <= task_uri \
+				target \_top
+				sub / <= task_open_title @ \Open
+			<= Task_close $mol_button_minor
+				click? <=> task_close? null
+				sub / <= Task_close_icon $mol_icon_close
+		body /
+			<= Task_move $mol_switch
+				enabled <= editable
+				value? <=> task_status? \
+				options <= status_options *
+			<= Task_frame $mol_frame
+				uri <= task_uri
+	everyone_label @ \Everyone
+	no_owner_label @ \No owner
+	no_due_label @ \No due date
+	overdue_label @ \Overdue: {due}
+	older_label @ \Done earlier: {count}
+	outside_label @ \Not a column of this board
+	cancelled_label @ \Cancelled, not shown: {count}
+	query_failed_label @ \The board query failed
+	conflict_label @ \The task changed elsewhere, the board reloaded it
+	refused_label @ \The move was not saved
+	saved_warning_label @ \Saved with a warning
