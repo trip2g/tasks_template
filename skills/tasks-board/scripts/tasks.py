@@ -68,6 +68,16 @@ def set_field(content, key, value):
     return block[:closing.start()] + key + ': ' + encode(value, None) + newline + block[closing.start():] + content[end:]
 
 
+def unset_field(content, key):
+    end = block_end(content)
+    if end < 0:
+        raise SystemExit('the note has no frontmatter')
+    found = re.compile(r'^' + re.escape(key) + r':.*(\r?\n|$)', re.M).search(content[:end])
+    if not found:
+        return content
+    return content[:found.start()] + content[found.end():]
+
+
 def meta_of(content):
     end = block_end(content)
     if end < 0:
@@ -142,8 +152,9 @@ def cmd_new(args):
         'type: task',
         'project: ' + json.dumps(args.project, ensure_ascii=False),
         'status: ' + json.dumps(args.status, ensure_ascii=False),
-        'owner: ' + json.dumps(args.owner or '', ensure_ascii=False),
     ]
+    if args.owner:
+        lines.append('owner: ' + json.dumps(args.owner, ensure_ascii=False))
     if args.due:
         lines.append('due: ' + args.due)
     lines += ['disposition: active', '---', '# ' + args.title, '']
@@ -168,6 +179,8 @@ def cmd_status(args):
     if args.status in done:
         content = set_field(content, 'done', today(args))
         content = content.rstrip('\n') + f'\n\n- {today(args)}: {args.status}. {args.evidence}\n'
+    elif text(meta.get('status')) in done:
+        content = unset_field(content, 'done')
     note.write_text(content)
     sync(args)
     print(f'{args.path}: {text(meta.get("status"))} -> {args.status}')
@@ -192,6 +205,33 @@ def cmd_board(args):
     note.write_text('\n'.join(lines))
     sync(args)
     print(note.relative_to(args.vault).as_posix())
+
+
+def cmd_clean(args):
+    sync(args)
+    keys = [k.strip() for k in args.keys.split(',') if k.strip()]
+    placeholders = set(args.placeholder)
+    removed = {}
+    notes = 0
+    for path, content, meta in vault_notes(args.vault):
+        if text(meta.get('type')) != 'task':
+            continue
+        changed = content
+        for key in keys:
+            if key in meta and text(meta.get(key)).strip() in placeholders:
+                changed = unset_field(changed, key)
+                label = f'{key}: {text(meta.get(key)).strip()}'
+                removed[label] = removed.get(label, 0) + 1
+        if changed != content:
+            notes += 1
+            if not args.dry_run:
+                (args.vault / path).write_text(changed)
+    if not args.dry_run:
+        sync(args)
+    verb = 'would remove' if args.dry_run else 'removed'
+    print(f'{verb} {sum(removed.values())} keys in {notes} task notes')
+    for label, count in sorted(removed.items(), key=lambda item: -item[1]):
+        print(f'  {count}  {label}')
 
 
 def lint(vault, day):
@@ -274,6 +314,12 @@ def main():
     board.add_argument('--title')
     board.add_argument('--columns', help='comma-separated statuses, the last one is done')
     board.set_defaults(run=cmd_board)
+
+    clean = sub.add_parser('clean', help='remove keys whose value only says the field is empty')
+    clean.add_argument('--placeholder', action='append', required=True, help='a value that means empty, e.g. "не задано"; repeat for each')
+    clean.add_argument('--keys', default='owner,due,blocked,priority,project', help='comma-separated keys to look at')
+    clean.add_argument('--dry-run', action='store_true', help='count, change nothing')
+    clean.set_defaults(run=cmd_clean)
 
     check = sub.add_parser('lint', help='tasks that need a decision')
     check.add_argument('--json', action='store_true')

@@ -44,6 +44,35 @@ namespace $ {
 		return Math.round((Date.parse(to) - Date.parse(from)) / 86_400_000)
 	}
 
+	export function $trip2gtasks_env_clock_missing(message: string) {
+		return /Undefined external variable: now/.test(message)
+	}
+
+	export function $trip2gtasks_env_reload(key: string, carried: unknown) {
+		try {
+			sessionStorage.setItem(key, JSON.stringify(carried))
+		} catch {}
+		const target = host().location ?? $mol_dom_context.location
+		target.reload()
+	}
+
+	export function $trip2gtasks_env_carried<Value>(key: string): Value | null {
+		try {
+			const text = sessionStorage.getItem(key)
+			sessionStorage.removeItem(key)
+			return text ? JSON.parse(text) as Value : null
+		} catch {
+			return null
+		}
+	}
+
 	$mol_locale.lang = () => $trip2gtasks_env_lang()
+
+	Object.assign($, {
+		$mol_lights(this: $, next?: boolean) {
+			if (next !== undefined) this.$mol_state_local.value('$mol_lights', next)
+			return this.$mol_state_local.value<boolean>('$mol_lights') ?? false
+		},
+	})
 
 }

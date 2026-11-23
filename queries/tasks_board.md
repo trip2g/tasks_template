@@ -5,10 +5,12 @@ free: true
 
 The cards of one board: every note with `type: task` that matches the board's `tasks_filter`, with the fields the board shows.
 
-Params: `today` (`YYYY-MM-DD`), `filter` (frontmatter key → value or list of values), `columns` (status names, left to right; the last one is the done column).
+Today is the site's date, `now.date`; a page may pass `today` (`YYYY-MM-DD`) for a trip2g that has no `now` yet.
+
+Params: `filter` (frontmatter key → value or list of values), `columns` (status names, left to right; the last one is the done column).
 
 ```jsonnet
-local today = std.get(params, 'today', '');
+local today = if std.objectHas(params, 'today') then params.today else std.parseJson(std.extVar('now')).date;
 local filter = std.get(params, 'filter', {});
 local defaultColumns = ['Inbox', 'Planned', 'In progress', 'Blocked', 'Done'];
 local given = std.get(params, 'columns', []);

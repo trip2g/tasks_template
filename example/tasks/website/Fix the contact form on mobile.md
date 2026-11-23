@@ -3,7 +3,6 @@ title: "Fix the contact form on mobile"
 type: task
 project: "Website"
 status: "Planned"
-owner: ""
 due: 2026-11-21
 disposition: active
 free: true

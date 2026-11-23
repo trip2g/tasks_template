@@ -19,11 +19,14 @@ A task note has `type: task` and these frontmatter fields:
 | `title` | what has to be done, as a sentence |
 | `project` | the project the board filters by |
 | `status` | one of the board's columns, as written there |
-| `owner` | the person who does it; empty when nobody was named |
+| `owner` | the person who does it; absent when nobody was named |
 | `due` | `YYYY-MM-DD`; absent when nobody named a date |
 | `blocked` | why it cannot move, when it cannot |
 | `disposition` | `active`, `paused`, `cancelled` or `completed` |
-| `done` | `YYYY-MM-DD` the task reached the done column |
+| `done` | `YYYY-MM-DD` the task reached the done column; removed when it leaves |
+
+An empty field is an absent key. Never write a placeholder such as
+«не назначен» or «не задано»: leave the key out.
 
 A board is a note with `layout: tasks`. `tasks_filter` names the tasks it
 shows (`project: Website`), `tasks_columns` its columns left to right; the
@@ -46,7 +49,12 @@ python3 $S status "tasks/Website/Fix the contact form.md" "In progress"
 python3 $S status "tasks/Website/Fix the contact form.md" Done --evidence 'Maya: "fixed and deployed"'
 python3 $S board --project Website --columns "Inbox,Planned,In progress,Blocked,Done"
 python3 $S lint --heading "Нужно решение"
+python3 $S clean --placeholder "не назначен" --placeholder "не задано" --dry-run
 ```
+
+`clean` removes the keys `owner`, `due`, `blocked`, `priority` and `project`
+of task notes whose value is one of the placeholders. Run it with `--dry-run`
+first and show the counts to the owner before running it for real.
 
 Any other field (owner, due, blocked, disposition) is one frontmatter key:
 set it with the `upsert_frontmatter_field` tool of the knowledge base, which
@@ -65,8 +73,8 @@ data. An empty section says `Nothing.`
 
 - **Never invent an owner or a due date.** Write the owner only when a person
   named them, the due date only when someone named a date. Otherwise leave
-  the field empty: `lint` will put the task in front of a person, which is
-  the point.
+  the key out: `lint` will put the task in front of a person, which is the
+  point.
 - **Close a task only on the owner's word or a link to the result.** The
   script refuses the done column without `--evidence`, and writes the
   evidence and the date into the note.

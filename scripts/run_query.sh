@@ -9,7 +9,12 @@ jsonnet=${JSONNET:-"go run github.com/google/go-jsonnet/cmd/jsonnet@v0.21.0"}
 prelude='local notes = std.parseJson(std.extVar("notes")), params = std.parseJson(std.extVar("params")), currentUser = std.parseJson(std.extVar("currentUser")); '
 code=$(awk '/^```jsonnet/{on=1; next} /^```/{on=0} on' "$query_note")
 
-$jsonnet \
+now_args=""
+if [ -n "${NOW:-}" ]; then
+	now_args="--ext-str now=$NOW"
+fi
+
+$jsonnet $now_args \
 	--ext-str-file notes="$notes_json" \
 	--ext-str params="$params_json" \
 	--ext-str currentUser='{"id":1,"role":"admin","isAdmin":true,"signedIn":true}' \

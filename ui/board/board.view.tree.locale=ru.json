@@ -7,7 +7,6 @@
 	"$trip2gtasks_board_task_open_title": "Открыть",
 	"$trip2gtasks_board_everyone_label": "Все",
 	"$trip2gtasks_board_no_owner_label": "Без владельца",
-	"$trip2gtasks_board_no_due_label": "Без срока",
 	"$trip2gtasks_board_overdue_label": "Просрочено: {due}",
 	"$trip2gtasks_board_older_label": "Сделано раньше: {count}",
 	"$trip2gtasks_board_outside_label": "Не колонка этой доски",
@@ -16,5 +15,6 @@
 	"$trip2gtasks_board_conflict_label": "Задачу изменили в другом месте, доска перечитала её",
 	"$trip2gtasks_board_refused_label": "Перемещение не сохранено",
 	"$trip2gtasks_board_saved_warning_label": "Сохранено с предупреждением",
-	"$trip2gtasks_board_no_rights_label": "Сайт отказал: двигать карточки может только вошедший администратор. Ответ сервера: {reason}"
+	"$trip2gtasks_board_signed_out_label": "Сессия закончилась, поэтому сайт не сохранил перемещение. Войдите и перетащите карточку снова.",
+	"$trip2gtasks_board_swipe_label": "Листайте вбок: колонок всего {count}."
 }

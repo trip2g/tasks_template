@@ -30,10 +30,17 @@ namespace $.$$ {
 			return this.config().title
 		}
 
+		run(params: Record<string, unknown>) {
+			const variables = { input: { query: this.query_name(), params } }
+			return $trip2gtasks_boards_list(variables).noteQuery
+		}
+
 		@$mol_mem
 		boards(): $trip2gtasks_boards_row[] {
-			const variables = { input: { query: this.query_name(), params: { today: $trip2gtasks_env_today() } } }
-			const res = $trip2gtasks_boards_list(variables).noteQuery
+			let res = this.run({})
+			if (res.__typename === 'ErrorPayload' && $trip2gtasks_env_clock_missing(res.message)) {
+				res = this.run({ today: $trip2gtasks_env_today() })
+			}
 			if (res.__typename === 'ErrorPayload') throw new Error(res.message)
 			return Array.isArray(res.result) ? res.result as $trip2gtasks_boards_row[] : []
 		}

@@ -66,7 +66,7 @@ class Commands(unittest.TestCase):
         out = run(self.vault, 'new', '--title', 'Order business cards', '--project', 'Website')
         self.assertEqual(out.returncode, 0, out.stderr)
         note = (self.vault / 'tasks' / 'Website' / 'Order business cards.md').read_text()
-        self.assertIn('owner: ""\n', note)
+        self.assertNotIn('owner:', note)
         self.assertNotIn('due:', note)
         self.assertIn('status: "Inbox"\n', note)
 
@@ -93,6 +93,24 @@ class Commands(unittest.TestCase):
         self.assertIn('status: "Done"\n', note)
         self.assertIn('done: 2026-11-23\n', note)
         self.assertTrue(note.endswith('- 2026-11-23: Done. Maya: "published", [[pricing]]\n'))
+
+    def test_leaving_done_removes_done(self):
+        path = 'tasks/website/Publish the accessibility statement.md'
+        before = (self.vault / path).read_text()
+        out = run(self.vault, 'status', path, 'In progress')
+        self.assertEqual(out.returncode, 0, out.stderr)
+        after = (self.vault / path).read_text()
+        self.assertEqual(after, before.replace('status: "Done"', 'status: "In progress"').replace('done: 2026-11-19\n', ''))
+
+    def test_clean_removes_placeholder_keys_only(self):
+        path = self.vault / 'tasks' / 'website' / 'Placeholder.md'
+        path.write_text('---\ntitle: "P"\ntype: task\nproject: "Website"\nstatus: "Inbox"\nowner: "не назначен"\ndue: "не задано"\nblocked: "real reason"\n---\n# P\n\nowner: не назначен\n')
+        dry = run(self.vault, 'clean', '--placeholder', 'не назначен', '--placeholder', 'не задано', '--dry-run')
+        self.assertIn('would remove 2 keys in 1 task notes', dry.stdout)
+        self.assertIn('owner: не назначен', path.read_text())
+        out = run(self.vault, 'clean', '--placeholder', 'не назначен', '--placeholder', 'не задано')
+        self.assertEqual(out.returncode, 0, out.stderr)
+        self.assertEqual(path.read_text(), '---\ntitle: "P"\ntype: task\nproject: "Website"\nstatus: "Inbox"\nblocked: "real reason"\n---\n# P\n\nowner: не назначен\n')
 
     def test_board_for_a_project(self):
         out = run(self.vault, 'board', '--project', 'Hiring', '--columns', 'Новые,В работе,Готово')

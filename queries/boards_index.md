@@ -5,10 +5,10 @@ free: true
 
 Every board (`layout: tasks`) with its counts, boards that need a decision first. A board with its own `tasks_query` is listed without counts: its cards are whatever that query returns.
 
-Params: `today` (`YYYY-MM-DD`).
+Today is the site's date, `now.date`; a page may pass `today` (`YYYY-MM-DD`) for a trip2g that has no `now` yet.
 
 ```jsonnet
-local today = std.get(params, 'today', '');
+local today = if std.objectHas(params, 'today') then params.today else std.parseJson(std.extVar('now')).date;
 local defaultQuery = '[[tasks_board]]';
 local defaultColumns = ['Inbox', 'Planned', 'In progress', 'Blocked', 'Done'];
 

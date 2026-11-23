@@ -15,6 +15,11 @@
 	margin-right: 9rem;
 }
 
+[trip2gtasks_board_swipe_hint] {
+	display: none;
+	color: var(--airkit_shade);
+}
+
 [trip2gtasks_board_columns] {
 	display: flex;
 	flex-wrap: nowrap;
@@ -111,6 +116,18 @@
 }
 
 @media (max-width: 40rem) {
+	[trip2gtasks_board_swipe_hint] {
+		display: block;
+	}
+
+	[trip2gtasks_board_columns] {
+		scroll-snap-type: x mandatory;
+	}
+
+	[trip2gtasks_board_column] {
+		scroll-snap-align: start;
+	}
+
 	[trip2gtasks_board_board_page_title] {
 		margin-right: 9rem;
 	}
@@ -131,4 +148,8 @@
 	[trip2gtasks_board_task_page_tools] {
 		margin-right: 0;
 	}
+}
+
+[trip2gtasks_board_cancelled] {
+	color: var(--airkit_shade);
 }

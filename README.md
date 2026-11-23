@@ -56,12 +56,17 @@ disposition: active
 | Field | Meaning |
 |---|---|
 | `status` | the column the card is in, written exactly as the board names it |
-| `owner` | who does it; empty or absent shows «No owner» |
+| `owner` | who does it; absent shows «No owner» |
 | `due` | `YYYY-MM-DD`; any other text is shown as is and is never overdue |
 | `project` | what the example boards filter by; any field can be filtered on |
 | `blocked` | why the task cannot move; shown on the card in any column |
 | `disposition` | `active` (default), `paused` (marked on the card), `cancelled` (hidden, counted), `completed` |
 | `done` | `YYYY-MM-DD` the task was finished; decides when it folds away |
+
+**An empty field is an absent key.** Leave `owner`, `due` or `blocked` out when
+there is nothing to say; do not write a placeholder such as «not assigned».
+The template reads an absent key, an empty string and `null` alike.
+`tasks.py clean` removes placeholders a vault already has.
 
 A card is overdue when `due` is a date before today, its status is not the
 done column, and it is neither `completed` nor `cancelled`.
@@ -127,22 +132,21 @@ returns, as long as it has this shape:
 
 Start from a copy of `queries/tasks_board.md`; `example/queries/overdue_tasks.md`
 is one: every overdue task, whatever its project. The board passes
-`params.today` and its `tasks_filter`/`tasks_columns` to your query too.
+its `tasks_filter` and `tasks_columns` to your query too, and `params.today`
+on a trip2g without `now` (see Today below).
 `layout: boards` lists such a board as a row without counts, saying so: only
 the default query's filter is something it can count.
 
 ### Today
 
-A Jsonnet query has no clock, so the page passes the visitor's date as
-`params.today`. trip2g is getting a server-side `now.date` for queries; when
-your instance has it, replace the first line of both queries,
+The queries take today from trip2g's `now.date`, the site's date in its time
+zone (trip2g after `e7ae338c`). A trip2g without `now` answers
+«Undefined external variable: now»; the page then asks again with
+`params.today`, the visitor's date. A query given `params.today` uses it:
 
 ```jsonnet
-local today = std.get(params, 'today', '');
+local today = if std.objectHas(params, 'today') then params.today else std.parseJson(std.extVar('now')).date;
 ```
-
-with `local today = now.date;` and the date becomes the site's, in its time
-zone.
 
 ## All boards
 
@@ -166,10 +170,13 @@ with «Sign in to move cards», and the sign-in button in the corner. The
 server checks every save, so a page opened by mistake cannot write.
 
 A move reads the task note, checks its status is still the one the card
-showed, and saves a `patch` of the frontmatter with `expectedHash`. If the
+showed, and saves a `meta` change with `expectedHash`: `status` is set, and
+`done` is set to today when the card enters the done column and removed when
+it leaves it. trip2g rewrites only those lines; every other byte of the note
+stays (`tests/live_meta.py` checks this against a running instance). If the
 note changed in the meantime — in Obsidian, by an agent, on another board —
-nothing is written and the board reloads the cards. If the save is refused,
-the card goes back and the board says why.
+nothing is written and the board reloads the cards. If the session has
+ended, the card goes back, the page reloads signed out and says why.
 
 ## The demo
 
@@ -193,6 +200,7 @@ python3 tasks.py new --title "Pick a sending day" --project Newsletter
 python3 tasks.py status "tasks/Newsletter/Pick a sending day.md" Planned
 python3 tasks.py board --project Newsletter --columns "Inbox,Planned,In progress,Done"
 python3 tasks.py lint --heading "Needs a decision"
+python3 tasks.py clean --placeholder "not assigned" --placeholder "none" --dry-run
 ```
 
 It refuses an invented due date and refuses to close a task without
@@ -230,7 +238,8 @@ git clone --depth 1 https://github.com/hyoo-ru/mam.git ../mam
 npm install
 npm run codegen   # after changing a .graphql file
 npm run build     # → dist/tasks.js with its translations, dist/*.html
-npm test          # queries, the frontmatter patch, the skill script
+npm test          # queries, the frontmatter reader, the status change, the skill script
+T2G_URL=http://localhost:8081 T2G_TOKEN=… npm test   # plus the live meta check; it writes tests/live_meta_probe.md, so use a throwaway instance
 ```
 
 `dist/tasks.js` carries its translations inside: a release asset is served
@@ -245,13 +254,11 @@ To try a local bundle, serve `dist/` and point the layouts at it:
   and frontmatter. The cards exist only on the site.
 - **No new task from the board** in this version: create the note (in
   Obsidian, by the agent or with `tasks.py new`).
-- **A move writes only `status:`.** Moving a card into the done column does
-  not set `done:`; such a card folds away after `tasks_done_days` counted
-  from its `due`, or at once when it has neither. `tasks.py status` sets
-  `done:`.
 - **Touch screens cannot drag.** On a phone, open the card and pick the
   column above the note.
-- The task note opened beside the board is the site's page for it, with the
-  site's own theme.
+- The board follows the site's theme rule — dark unless the visitor picked
+  light in the corner menu — so it matches the task note opened beside it.
+- `meta` writes the `status:` line in its own style: `status: "Planned"`
+  becomes `status: In progress`.
 - Air-gapped instances that cannot reach github.com have to serve
   `tasks.js` themselves and edit the URL in both layouts.

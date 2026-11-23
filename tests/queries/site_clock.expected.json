@@ -56,7 +56,7 @@
          "done": "",
          "due": "2026-11-21",
          "due_date": true,
-         "overdue": false,
+         "overdue": true,
          "owner": "",
          "path": "tasks/website/Fix the contact form on mobile.md",
          "permalink": "/tasks/website/fix_the_contact_form_on_mobile",
@@ -98,7 +98,7 @@
          "done": "",
          "due": "2026-11-20",
          "due_date": true,
-         "overdue": false,
+         "overdue": true,
          "owner": "Leo",
          "path": "tasks/website/Replace the hero photo.md",
          "permalink": "/tasks/website/replace_the_hero_photo",
@@ -107,5 +107,5 @@
          "title": "Replace the hero photo"
       }
    ],
-   "today": ""
+   "today": "2026-11-23"
 }

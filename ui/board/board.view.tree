@@ -20,6 +20,10 @@ $trip2gtasks_board $mol_book2
 		tone <= problem_tone \bad
 	Signin $mol_paragraph
 		title @ \Sign in to move cards: the sign-in button is in the top right corner.
+	Cancelled $mol_paragraph
+		title <= cancelled_text \
+	Swipe_hint $mol_paragraph
+		title <= swipe_hint \
 	Columns $mol_view
 		sub <= column_views /
 	Column* $mol_drop
@@ -85,7 +89,6 @@ $trip2gtasks_board $mol_book2
 				uri <= task_uri
 	everyone_label @ \Everyone
 	no_owner_label @ \No owner
-	no_due_label @ \No due date
 	overdue_label @ \Overdue: {due}
 	older_label @ \Done earlier: {count}
 	outside_label @ \Not a column of this board
@@ -93,5 +96,6 @@ $trip2gtasks_board $mol_book2
 	query_failed_label @ \The board query failed
 	conflict_label @ \The task changed elsewhere, the board reloaded it
 	refused_label @ \The move was not saved
-	no_rights_label @ \The site refused it; moving cards needs a signed-in admin. The server said: {reason}
+	signed_out_label @ \Your session has ended, so the site did not save it. Sign in and move the card again.
+	swipe_label @ \Swipe sideways to see all {count} columns.
 	saved_warning_label @ \Saved with a warning

@@ -6,7 +6,7 @@ free: true
 The cards of the "Overdue everywhere" board: every open task past its `due` date, whatever its project. Same shape as `[[tasks_board]]`, so the board draws it.
 
 ```jsonnet
-local today = std.get(params, 'today', '');
+local today = if std.objectHas(params, 'today') then params.today else std.parseJson(std.extVar('now')).date;
 local filter = std.get(params, 'filter', {});
 local defaultColumns = ['Inbox', 'Planned', 'In progress', 'Blocked', 'Done'];
 local given = std.get(params, 'columns', []);

@@ -1,0 +1,111 @@
+{
+   "columns": [
+      "Inbox",
+      "Planned",
+      "In progress",
+      "Blocked",
+      "Done"
+   ],
+   "done_column": "Done",
+   "tasks": [
+      {
+         "blocked": "",
+         "disposition": "completed",
+         "done": "2026-10-02",
+         "due": "",
+         "due_date": false,
+         "overdue": false,
+         "owner": "Leo",
+         "path": "tasks/website/Choose a font pair.md",
+         "permalink": "/tasks/website/choose_a_font_pair",
+         "project": "Website",
+         "status": "Done",
+         "title": "Choose a font pair"
+      },
+      {
+         "blocked": "",
+         "disposition": "active",
+         "done": "",
+         "due": "after the launch",
+         "due_date": false,
+         "overdue": false,
+         "owner": "Maya",
+         "path": "tasks/website/Collect testimonials.md",
+         "permalink": "/tasks/website/collect_testimonials",
+         "project": "Website",
+         "status": "Inbox",
+         "title": "Collect testimonials"
+      },
+      {
+         "blocked": "",
+         "disposition": "active",
+         "done": "",
+         "due": "2026-11-28",
+         "due_date": true,
+         "overdue": false,
+         "owner": "Maya",
+         "path": "tasks/website/Draft the pricing page.md",
+         "permalink": "/tasks/website/draft_the_pricing_page",
+         "project": "Website",
+         "status": "In progress",
+         "title": "Draft the pricing page"
+      },
+      {
+         "blocked": "",
+         "disposition": "active",
+         "done": "",
+         "due": "2026-11-21",
+         "due_date": true,
+         "overdue": true,
+         "owner": "",
+         "path": "tasks/website/Fix the contact form on mobile.md",
+         "permalink": "/tasks/website/fix_the_contact_form_on_mobile",
+         "project": "Website",
+         "status": "Planned",
+         "title": "Fix the contact form on mobile"
+      },
+      {
+         "blocked": "",
+         "disposition": "paused",
+         "done": "",
+         "due": "2026-12-15",
+         "due_date": true,
+         "overdue": false,
+         "owner": "Leo",
+         "path": "tasks/website/Move the blog to the new domain.md",
+         "permalink": "/tasks/website/move_the_blog_to_the_new_domain",
+         "project": "Website",
+         "status": "Planned",
+         "title": "Move the blog to the new domain"
+      },
+      {
+         "blocked": "",
+         "disposition": "completed",
+         "done": "2026-11-19",
+         "due": "2026-11-18",
+         "due_date": true,
+         "overdue": false,
+         "owner": "Maya",
+         "path": "tasks/website/Publish the accessibility statement.md",
+         "permalink": "/tasks/website/publish_the_accessibility_statement",
+         "project": "Website",
+         "status": "Done",
+         "title": "Publish the accessibility statement"
+      },
+      {
+         "blocked": "waiting for the photographer's final files",
+         "disposition": "active",
+         "done": "",
+         "due": "2026-11-20",
+         "due_date": true,
+         "overdue": true,
+         "owner": "Leo",
+         "path": "tasks/website/Replace the hero photo.md",
+         "permalink": "/tasks/website/replace_the_hero_photo",
+         "project": "Website",
+         "status": "Blocked",
+         "title": "Replace the hero photo"
+      }
+   ],
+   "today": "2026-11-23"
+}

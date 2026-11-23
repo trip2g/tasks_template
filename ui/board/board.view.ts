@@ -16,6 +16,7 @@ namespace $.$$ {
 	}
 
 	export type $trip2gtasks_board_data = {
+		today: string
 		columns: string[]
 		done_column: string
 		tasks: $trip2gtasks_board_card[]
@@ -27,6 +28,7 @@ namespace $.$$ {
 
 	const outside = '\u0000outside'
 	const nobody = '\u0000nobody'
+	const notice_key = 'trip2gtasks_notice'
 
 	export class $trip2gtasks_board extends $.$trip2gtasks_board {
 
@@ -62,7 +64,7 @@ namespace $.$$ {
 
 		params() {
 			const meta = this.meta()
-			const params: Record<string, unknown> = { today: this.today() }
+			const params: Record<string, unknown> = {}
 
 			const filter = meta.tasks_filter
 			if (filter && typeof filter === 'object' && !Array.isArray(filter)) params.filter = filter
@@ -73,16 +75,24 @@ namespace $.$$ {
 			return params
 		}
 
+		run(params: Record<string, unknown>) {
+			const variables = { input: { query: this.query_name(), params } }
+			return $trip2gtasks_board_tasks(variables).noteQuery
+		}
+
 		@$mol_mem
 		board(): $trip2gtasks_board_data {
-			const variables = { input: { query: this.query_name(), params: this.params() } }
-			const res = $trip2gtasks_board_tasks(variables).noteQuery
+			let res = this.run(this.params())
+			if (res.__typename === 'ErrorPayload' && $trip2gtasks_env_clock_missing(res.message)) {
+				res = this.run({ ...this.params(), today: this.today() })
+			}
 			if (res.__typename === 'ErrorPayload') throw new Error(res.message)
 
-			const data = res.result as Partial<$trip2gtasks_board_data>
+			const data = res.result as Partial<$trip2gtasks_board_data> & { today?: string }
 			const columns = Array.isArray(data.columns) ? data.columns : []
 
 			return {
+				today: data.today || this.today(),
 				columns,
 				done_column: data.done_column ?? columns[columns.length - 1] ?? '',
 				tasks: Array.isArray(data.tasks) ? data.tasks : [],
@@ -101,8 +111,9 @@ namespace $.$$ {
 		}
 
 		@$mol_mem
-		notice(next?: Notice | null) {
-			return next ?? null
+		notice(next?: Notice | null): Notice | null {
+			if (next !== undefined) return next
+			return $trip2gtasks_env_carried<Notice>(notice_key)
 		}
 
 		override problem_title() {
@@ -123,7 +134,9 @@ namespace $.$$ {
 			return [
 				...this.notice() ? [this.Problem()] : [],
 				...this.editable() ? [] : [this.Signin()],
+				this.Swipe_hint(),
 				this.Columns(),
+				...this.cancelled_count() ? [this.Cancelled()] : [],
 			]
 		}
 
@@ -136,9 +149,13 @@ namespace $.$$ {
 		cards() {
 			const moves = this.moves()
 
+			const { done_column, today } = this.board()
+
 			return this.board().tasks.map(card => {
 				const move = moves[card.path]
-				return move && move.from === card.status ? { ...card, status: move.to } : card
+				if (!move || move.from !== card.status) return card
+				const done = move.to === done_column ? today : move.from === done_column ? '' : card.done
+				return { ...card, status: move.to, done }
 			})
 		}
 
@@ -187,6 +204,19 @@ namespace $.$$ {
 			return stray ? [...columns, outside] : columns
 		}
 
+		@$mol_mem
+		cancelled_count() {
+			return this.cards().filter(card => card.disposition === 'cancelled').length
+		}
+
+		override cancelled_text() {
+			return this.cancelled_label().replace('{count}', String(this.cancelled_count()))
+		}
+
+		override swipe_hint() {
+			return this.swipe_label().replace('{count}', String(this.column_keys().length))
+		}
+
 		override column_views() {
 			return this.column_keys().map(key => this.Column(key))
 		}
@@ -223,7 +253,7 @@ namespace $.$$ {
 			const cards = this.column_cards(key)
 			if (key !== this.board().done_column) return { recent: cards, older: [] as typeof cards }
 
-			const today = this.today()
+			const today = this.board().today
 			const limit = this.done_days()
 			const old = (card: $trip2gtasks_board_card) => {
 				const date = this.finished_on(card)
@@ -352,9 +382,13 @@ namespace $.$$ {
 			} catch (error) {
 				if ($mol_promise_like(error)) $mol_fail_hidden(error)
 				this.forget(path)
-				const reason = error instanceof $trip2gtasks_gql_error ? this.no_rights_label().replace('{reason}', error.message) : (error as Error).message
-				this.notice({ title: this.refused_label(), text: reason, tone: 'bad' })
+				if (error instanceof $trip2gtasks_gql_error) return this.signed_out()
+				this.notice({ title: this.refused_label(), text: (error as Error).message, tone: 'bad' })
 			}
+		}
+
+		signed_out() {
+			$trip2gtasks_env_reload(notice_key, { title: this.refused_label(), text: this.signed_out_label(), tone: 'bad' })
 		}
 
 		forget(path: string) {
@@ -374,10 +408,9 @@ namespace $.$$ {
 
 			if (($trip2gtasks_frontmatter_value(note.content, 'status') ?? '') !== card.status) return this.conflict(card.path)
 
-			const patch = $trip2gtasks_frontmatter_set(note.content, 'status', status)
-			if (!patch) throw new Error(card.path)
-
-			const change = { patch: { path: card.path, find: patch.find, replace: patch.replace, expectedHash: note.latestContentHash } }
+			const { done_column, today } = this.board()
+			const { set, unset } = $trip2gtasks_board_status_meta(card.status, status, done_column, today)
+			const change = { meta: { path: card.path, set, unset, expectedHash: note.latestContentHash } }
 			const res = $trip2gtasks_board_save({ input: { changes: [change] } }).updateNotes
 
 			switch (res.__typename) {
@@ -387,7 +420,6 @@ namespace $.$$ {
 					return
 				}
 				case 'UpdateNotesHashMismatchPayload':
-				case 'UpdateNotesPatchNotFoundPayload':
 					return this.conflict(card.path)
 				case 'ErrorPayload':
 					throw new Error(res.message)
