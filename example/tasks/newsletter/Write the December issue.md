@@ -6,6 +6,7 @@ status: "Planned"
 owner: "Sam"
 due: 2026-12-01
 disposition: active
+free: true
 ---
 # Write the December issue
 

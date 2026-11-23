@@ -4,6 +4,7 @@ layout: tasks
 tasks_filter:
   project: Newsletter
 tasks_columns: [Inbox, Planned, In progress, Done]
+free: true
 ---
 # Newsletter board
 

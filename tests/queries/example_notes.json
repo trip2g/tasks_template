@@ -16,7 +16,8 @@
     "Planned",
     "In progress",
     "Done"
-   ]
+   ],
+   "free": true
   }
  },
  {
@@ -28,7 +29,8 @@
   "meta": {
    "title": "Overdue everywhere",
    "layout": "tasks",
-   "tasks_query": "[[overdue_tasks]]"
+   "tasks_query": "[[overdue_tasks]]",
+   "free": true
   }
  },
  {
@@ -42,7 +44,8 @@
    "layout": "tasks",
    "tasks_filter": {
     "project": "Website"
-   }
+   },
+   "free": true
   }
  },
  {
@@ -53,7 +56,8 @@
   "permalink": "/boards",
   "meta": {
    "title": "All boards",
-   "layout": "boards"
+   "layout": "boards",
+   "free": true
   }
  },
  {
@@ -80,7 +84,8 @@
    "status": "In review",
    "owner": "Sam",
    "due": "2026-11-25",
-   "disposition": "active"
+   "disposition": "active",
+   "free": true
   }
  },
  {
@@ -94,7 +99,8 @@
    "type": "task",
    "project": "Newsletter",
    "status": "Inbox",
-   "disposition": "active"
+   "disposition": "active",
+   "free": true
   }
  },
  {
@@ -110,7 +116,8 @@
    "status": "Planned",
    "owner": "Sam",
    "due": "2026-12-01",
-   "disposition": "active"
+   "disposition": "active",
+   "free": true
   }
  },
  {
@@ -126,7 +133,8 @@
    "status": "Done",
    "owner": "Leo",
    "done": "2026-10-02",
-   "disposition": "completed"
+   "disposition": "completed",
+   "free": true
   }
  },
  {
@@ -142,7 +150,8 @@
    "status": "Inbox",
    "owner": "Maya",
    "due": "after the launch",
-   "disposition": "active"
+   "disposition": "active",
+   "free": true
   }
  },
  {
@@ -158,7 +167,8 @@
    "status": "In progress",
    "owner": "Maya",
    "due": "2026-11-28",
-   "disposition": "active"
+   "disposition": "active",
+   "free": true
   }
  },
  {
@@ -174,7 +184,8 @@
    "status": "Planned",
    "owner": "",
    "due": "2026-11-21",
-   "disposition": "active"
+   "disposition": "active",
+   "free": true
   }
  },
  {
@@ -190,7 +201,8 @@
    "status": "Planned",
    "owner": "Leo",
    "due": "2026-12-15",
-   "disposition": "paused"
+   "disposition": "paused",
+   "free": true
   }
  },
  {
@@ -207,7 +219,8 @@
    "owner": "Maya",
    "due": "2026-11-18",
    "done": "2026-11-19",
-   "disposition": "completed"
+   "disposition": "completed",
+   "free": true
   }
  },
  {
@@ -224,7 +237,8 @@
    "owner": "Leo",
    "due": "2026-11-20",
    "blocked": "waiting for the photographer's final files",
-   "disposition": "active"
+   "disposition": "active",
+   "free": true
   }
  }
 ]

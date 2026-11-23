@@ -7,6 +7,7 @@ owner: "Leo"
 due: 2026-11-20
 blocked: "waiting for the photographer's final files"
 disposition: active
+free: true
 ---
 # Replace the hero photo
 

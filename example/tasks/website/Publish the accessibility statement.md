@@ -7,6 +7,7 @@ owner: "Maya"
 due: 2026-11-18
 done: 2026-11-19
 disposition: completed
+free: true
 ---
 # Publish the accessibility statement
 

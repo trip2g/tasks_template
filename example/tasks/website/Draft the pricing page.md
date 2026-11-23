@@ -6,6 +6,7 @@ status: "In progress"
 owner: "Maya"
 due: 2026-11-28
 disposition: active
+free: true
 ---
 # Draft the pricing page
 

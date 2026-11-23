@@ -6,6 +6,7 @@ status: "Planned"
 owner: ""
 due: 2026-11-21
 disposition: active
+free: true
 ---
 # Fix the contact form on mobile
 

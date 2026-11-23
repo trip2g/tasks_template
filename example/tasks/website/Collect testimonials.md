@@ -6,6 +6,7 @@ status: "Inbox"
 owner: "Maya"
 due: "after the launch"
 disposition: active
+free: true
 ---
 # Collect testimonials
 

@@ -6,6 +6,7 @@ status: "In review"
 owner: "Sam"
 due: 2026-11-25
 disposition: active
+free: true
 ---
 # Clean the subscriber list
 

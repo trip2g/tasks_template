@@ -3,6 +3,7 @@ title: Website board
 layout: tasks
 tasks_filter:
   project: Website
+free: true
 ---
 # Website board
 

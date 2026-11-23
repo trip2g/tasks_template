@@ -33,5 +33,5 @@ mkdir -p "$dist"
 	done
 } > "$dist/tasks.js"
 
-cp "$repo/_layouts/tasks.html" "$repo/_layouts/boards.html" "$dist/"
+cp "$repo/_layouts/tasks.html" "$repo/_layouts/boards.html" "$repo/queries/tasks_board.md" "$repo/queries/boards_index.md" "$dist/"
 ls -l "$dist"

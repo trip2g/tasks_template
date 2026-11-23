@@ -4,6 +4,7 @@ type: task
 project: "Newsletter"
 status: "Inbox"
 disposition: active
+free: true
 ---
 # Pick a sending day
 
