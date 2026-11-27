@@ -254,6 +254,21 @@ python3 tasks.py clean --placeholder "not assigned" --placeholder "none" --dry-r
 It refuses an invented due date and refuses to close a task without
 `--evidence`. See `skills/tasks-board/SKILL.md`.
 
+## From kanban-plugin boards
+
+`scripts/migrate-kanban-board` turns obsidian-kanban board notes (a column
+per heading, a card per line) into task notes and query boards: one task per
+card, duplicates across boards merged by link target, a status two boards
+disagree on listed instead of guessed. Run it with `--dry-run` first. See
+`skills/tasks-board/references/migration.md`.
+
+## The skill package
+
+`scripts/pack-skill.sh` assembles `dist/skill/tasks-board/`: the skill
+(`SKILL.md`, `references/`, `scripts/`) and the app it brings, `layouts/`
+for `_layouts/` and `projects/` (queries, validators, their patch) for the
+knowledge base. A box's skill-install installs it as a skill with an app.
+
 ## How it is built
 
 The board is a [$mol](https://mol.hyoo.ru) application, built in a

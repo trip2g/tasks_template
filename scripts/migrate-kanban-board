@@ -1,0 +1,508 @@
+#!/usr/bin/env python3
+import argparse
+import collections
+import datetime
+import json
+import pathlib
+import re
+import sys
+
+import yaml
+
+PLACEHOLDERS = {'', 'не задан', 'не задано', 'не задана', 'срок не задан', 'ответственный не задан', 'null', 'none'}
+PRIORITY_WORDS = {'low', 'medium', 'high', 'critical', 'низкий', 'средний', 'высокий', 'критический', 'срочно и важно', 'срочно', 'важно'}
+WIKILINK = re.compile(r'\[\[([^\]|]+)(?:\|((?:[^\[\]]|\[[^\[\]]*\])*))?\]\]')
+CODE_PREFIX = re.compile(r'^`([^`]+)`\s+')
+COMMENT = re.compile(r'<!--\s*kanban-task:(\{.*?\})\s*-->')
+DATE = re.compile(r'(\d{2})\.(\d{2})\.(\d{4})')
+COLOR = re.compile(r'^\S+\s+`([\w-]+)`$')
+HANDLE = re.compile(r'\s*\(`?@[\w.]+`?\)')
+FORBIDDEN = re.compile(r'[\\/:*?"<>|#^\[\]]')
+
+
+def split_frontmatter(text):
+    if not text.startswith('---\n'):
+        return {}, text
+    end = text.index('\n---', 4)
+    meta = yaml.safe_load(text[4:end]) or {}
+    body = text[end + 4:].lstrip('\n')
+    return meta, body
+
+
+def render(meta, body):
+    head = yaml.safe_dump(meta, allow_unicode=True, sort_keys=False, width=1000).rstrip('\n')
+    return f'---\n{head}\n---\n\n{body.rstrip()}\n'
+
+
+def parse_board(path):
+    meta, body = split_frontmatter(path.read_text())
+    columns = []
+    cards = []
+    column = None
+    for line in body.split('\n'):
+        if line.startswith('%% kanban:settings'):
+            break
+        if line.startswith('## '):
+            column = line[3:].strip()
+            columns.append(column)
+            continue
+        found = re.match(r'^- \[([ xX])\] (.*)$', line)
+        if found and column is not None:
+            position = sum(1 for c in cards if c['column'] == column)
+            cards.append({'column': column, 'checked': found.group(1) != ' ', 'line': line, 'text': found.group(2), 'position': position})
+    return meta, columns, cards
+
+
+def handles_of(text):
+    text = re.sub(r'^Исполнитель:\s*', '', text)
+    found = []
+    for part in re.split(r'\s+и\s+|,\s*', text):
+        handle = re.search(r'@([\w.]+)', part)
+        found.append('@' + handle.group(1) if handle else '')
+    return found
+
+
+def owners_of(text):
+    text = HANDLE.sub('', text).strip()
+    text = re.sub(r'^Исполнитель:\s*', '', text)
+    return [part.strip() for part in re.split(r'\s+и\s+|,\s*', text) if part.strip()]
+
+
+def due_of(segment):
+    found = DATE.search(segment)
+    if not found:
+        return None
+    day, month, year = found.groups()
+    return f'{year}-{month}-{day}'
+
+
+def parse_card(card, board_direction):
+    text = card['text']
+    extra = {}
+    comment = COMMENT.search(text)
+    if comment:
+        data = json.loads(comment.group(1))
+        if data.get('id'):
+            extra['task_id'] = data['id']
+        if data.get('depends_on'):
+            extra['depends_on'] = data['depends_on']
+        text = COMMENT.sub('', text).strip()
+
+    segments = [s.strip() for s in text.split(' · ')]
+    head = segments[0]
+    code = None
+    prefix = CODE_PREFIX.match(head)
+    if prefix:
+        code = prefix.group(1)
+        head = head[prefix.end():]
+    link = WIKILINK.search(head)
+    if link:
+        target = link.group(1).strip()
+        title = (link.group(2) or target.split('/')[-1].split('#')[0]).strip()
+    else:
+        target = None
+        title = head.strip()
+
+    task = {'title': title, 'code': code, 'target': target, 'owners': [], 'due': None, 'priority': None,
+            'blocked': None, 'direction': None, 'kind': None, 'color': None, 'wekan_list': None,
+            'wekan': None, 'notes': [], 'checked': card['checked'], 'line': card['line'], **extra}
+
+    after_bold = False
+    for segment in segments[1:]:
+        bold = re.fullmatch(r'\*\*(.+)\*\*', segment)
+        inner = bold.group(1).strip() if bold else segment
+        lowered = inner.lower()
+        owner_slot = after_bold
+        after_bold = False
+        if inner.startswith('Исполнитель:'):
+            task['owners'] = owners_of(inner)
+        elif lowered in PRIORITY_WORDS:
+            task['priority'] = inner
+        elif bold:
+            after_bold = True
+            if board_direction is None:
+                direction, _, kind = inner.partition(' / ')
+                task['direction'] = direction.strip()
+                task['kind'] = kind.strip() or None
+            else:
+                task['kind'] = inner
+        elif segment.startswith('`wekan:'):
+            task['wekan'] = segment.strip('`')[len('wekan:'):]
+        elif segment.startswith('`batch:'):
+            task['wekan_batch'] = segment.strip('`')[len('batch:'):]
+        elif COLOR.match(segment):
+            color = COLOR.match(segment).group(1)
+            task['color'] = None if color == 'null' else color
+        elif lowered.startswith('источник:'):
+            task['wekan_list'] = inner.split(':', 1)[1].strip()
+        elif lowered.startswith('блокер:'):
+            task['blocked'] = inner.split(':', 1)[1].strip()
+        elif segment.startswith('📅'):
+            task['due'] = due_of(segment) or segment.lstrip('📅 ').strip()
+            clock = re.search(r'\b(\d{1,2}:\d{2})\b', segment)
+            if clock:
+                task['due_time'] = clock.group(1)
+        elif lowered in PLACEHOLDERS:
+            continue
+        elif segment.startswith('⛓') or segment.startswith('→'):
+            task['stage_hint'] = segment
+        elif owner_slot and not task['owners'] and ':' not in HANDLE.sub('', segment):
+            task['owners'] = owners_of(segment)
+            task['handles'] = handles_of(segment)
+        elif task['due'] is None and (lowered.startswith('ориентир') or task['owners']):
+            task['due'] = inner
+        else:
+            task['notes'].append(inner)
+    return task
+
+
+def metric_of(spec):
+    label, _, flag = spec.partition('=')
+    risk = flag.endswith('!')
+    metric = {'label': label, 'flag': flag.rstrip('!')}
+    if risk:
+        metric['risk'] = True
+    return metric
+
+
+def direction_of_board(title, pattern):
+    found = re.fullmatch(pattern, title)
+    return found.group(1).strip() if found else None
+
+
+def identity(task):
+    if task['target']:
+        return task['target']
+    return 'code:' + task['code'] if task['code'] else 'title:' + task['title']
+
+
+def safe_name(text):
+    text = FORBIDDEN.sub(' ', text)
+    text = re.sub(r'\s+', ' ', text).strip(' .')
+    return text[:120].rstrip(' .')
+
+
+class Migration:
+
+    def __init__(self, args):
+        self.vault = pathlib.Path(args.vault)
+        self.out = pathlib.Path(args.out) if args.out else None
+        self.boards = [pathlib.Path(b) for b in args.boards]
+        self.summary = pathlib.Path(args.summary) if args.summary else None
+        self.pattern = args.direction_pattern
+        self.tasks_dir = args.tasks_dir
+        self.archive_dir = args.archive_dir
+        self.index = args.index
+        self.today = args.today
+        self.layout = args.layout
+        self.field = args.field
+        self.people_dir = args.people_dir
+        self.metrics = [metric_of(m) for m in args.metric]
+        self.menu = dict(item.split('=', 1) for item in args.menu)
+        self.board_label = {}
+        self.entries = collections.OrderedDict()
+        self.board_info = []
+        self.report = {'boards': [], 'cards_read': 0, 'tasks': 0, 'tasks_new': 0, 'tasks_updated': 0,
+                       'duplicates_merged': 0, 'status_conflicts': [], 'field_conflicts': [],
+                       'without_owner': [], 'owners': {}, 'direction_aliases': {}}
+
+    def read(self):
+        for path in self.boards:
+            meta, columns, cards = parse_board(path)
+            title = path.stem
+            is_summary = self.summary is not None and path.resolve() == self.summary.resolve()
+            direction = None if is_summary else direction_of_board(title, self.pattern) or title
+            self.board_info.append({'path': path, 'meta': meta, 'columns': columns, 'title': title,
+                                    'summary': is_summary, 'direction': direction, 'cards': len(cards)})
+            self.report['boards'].append({'board': title, 'summary': is_summary, 'cards': len(cards), 'columns': columns})
+            self.report['cards_read'] += len(cards)
+            for card in cards:
+                task = parse_card(card, direction)
+                key = identity(task)
+                entry = self.entries.setdefault(key, {'key': key, 'seen': []})
+                entry['seen'].append({'board': title, 'summary': is_summary, 'direction': direction,
+                                      'column': card['column'], 'position': card['position'], 'task': task})
+
+    def aliases(self):
+        votes = collections.defaultdict(collections.Counter)
+        for entry in self.entries.values():
+            named = [s['task']['direction'] for s in entry['seen'] if s['summary'] and s['task']['direction']]
+            boards = [s['direction'] for s in entry['seen'] if s['direction']]
+            for name in named:
+                for board in boards:
+                    votes[name][board] += 1
+        alias = {name: counter.most_common(1)[0][0] for name, counter in votes.items()}
+        self.report['direction_aliases'] = {k: v for k, v in alias.items() if k != v}
+        self.board_label = {board: name for name, board in alias.items()}
+        return alias
+
+    def workstream_of_board(self, direction):
+        return self.board_label.get(direction, direction)
+
+    def resolve(self):
+        alias = self.aliases()
+        resolved = []
+        for entry in self.entries.values():
+            seen = entry['seen']
+            if len(seen) > 1:
+                self.report['duplicates_merged'] += len(seen) - 1
+            first = next((s['task'] for s in seen if s['summary']), seen[0]['task'])
+            merged = dict(first)
+            for s in seen:
+                for field in ('owners', 'due', 'due_time', 'priority', 'blocked', 'kind', 'color', 'wekan_list', 'wekan', 'wekan_batch', 'code', 'task_id', 'depends_on', 'handles', 'stage_hint'):
+                    if not merged.get(field) and s['task'].get(field):
+                        merged[field] = s['task'][field]
+
+            projects = []
+            for s in seen:
+                name = self.workstream_of_board(s['direction']) if s['direction'] else s['task']['direction']
+                if name and name not in projects:
+                    projects.append(name)
+            first_seen = next((s for s in seen if s['summary']), seen[0])
+            merged['order'] = first_seen['position'] + 1
+
+            statuses = collections.OrderedDict()
+            for s in seen:
+                statuses.setdefault(s['column'], []).append(s['board'])
+            status = next(iter(statuses)) if len(statuses) == 1 else None
+            if status is None:
+                self.report['status_conflicts'].append({'task': merged['title'], 'key': entry['key'],
+                                                        'columns': {c: b for c, b in statuses.items()}})
+            resolved.append({'key': entry['key'], 'task': merged, 'projects': projects, 'status': status,
+                             'statuses': statuses, 'boards': [s['board'] for s in seen]})
+        return resolved
+
+    def note_path(self, item, taken):
+        target = item['task']['target']
+        if target and '#' not in target:
+            return target if target.endswith('.md') else target + '.md'
+        project = safe_name(item['projects'][0]) if item['projects'] else 'Без направления'
+        base = f'{self.tasks_dir}/{project}/{safe_name(item["task"]["title"]) or "Задача"}'
+        path = base + '.md'
+        n = 2
+        while path in taken:
+            path = f'{base} ({n}).md'
+            n += 1
+        return path
+
+    def task_meta(self, item, existing):
+        task = item['task']
+        meta = dict(existing)
+        for key in list(meta):
+            value = meta[key]
+            if isinstance(value, str) and value.strip().lower() in PLACEHOLDERS:
+                del meta[key]
+        meta['title'] = existing.get('title') or task['title']
+        meta['type'] = 'task'
+        if item['projects']:
+            meta[self.field] = item['projects'][0] if len(item['projects']) == 1 else item['projects']
+        if item['status'] is not None:
+            if existing.get('status') and existing['status'] != item['status']:
+                self.report['status_conflicts'].append({'task': task['title'], 'key': item['key'],
+                                                        'columns': {item['status']: item['boards'], existing['status']: ['заметка задачи']}})
+                meta.pop('status')
+                meta['status_conflict'] = [item['status'], existing['status']]
+            else:
+                meta['status'] = item['status']
+        else:
+            meta.pop('status', None)
+            meta['status_conflict'] = list(item['statuses'])
+        owners = task['owners']
+        if owners:
+            had = existing.get('owner')
+            value = owners[0] if len(owners) == 1 else owners
+            had_people = owners_of(had) if isinstance(had, str) else had
+            if had and had_people != owners and not (isinstance(had, str) and had in owners):
+                self.report['field_conflicts'].append({'task': task['title'], 'field': 'owner', 'note': had, 'board': value})
+            else:
+                meta['owner'] = value
+        for field in ('due', 'priority', 'blocked', 'code', 'color', 'task_id', 'depends_on'):
+            if task.get(field) and not meta.get(field):
+                meta[field] = task[field]
+        if task.get('kind') and not meta.get('task_type'):
+            meta['task_type'] = task['kind']
+        handles = task.get('handles') or []
+        if meta.get('owner') and any(handles):
+            meta['owner_telegram'] = handles[0] if len(handles) == 1 else handles
+        for field in ('due_time', 'wekan_batch', 'stage_hint'):
+            if task.get(field) and not meta.get(field):
+                meta[field] = task[field]
+        meta['order'] = task['order']
+        if task['wekan']:
+            meta['wekan'] = task['wekan']
+        if task['wekan_list']:
+            meta['wekan_list'] = task['wekan_list']
+        if task['target'] and '#' in task['target']:
+            meta['source'] = f'[[{task["target"]}]]'
+        return meta
+
+    def done_column(self, item):
+        for info in self.board_info:
+            if info['title'] in item['boards'] and info['columns']:
+                return info['columns'][-1]
+        return None
+
+    def inherited(self, item):
+        for info in self.board_info:
+            if info['title'] in item['boards'] and 'subgraphs' in info['meta']:
+                return {'subgraphs': info['meta']['subgraphs']}
+        return {}
+
+    def body_for(self, item):
+        lines = [f'# {item["task"]["title"]}', '',
+                 f'Перенесено с досок {self.today}: ' + ', '.join(f'«{b}»' for b in item['boards']) + '.', '']
+        if item['task']['notes']:
+            lines += ['## Заметки с карточки', ''] + [f'- {n}' for n in item['task']['notes']] + ['']
+        lines += ['## Карточка до переноса', '']
+        lines += ['```', item['task']['line'], '```']
+        return '\n'.join(lines)
+
+    def write_tasks(self, resolved):
+        taken = set()
+        files = {}
+        for item in resolved:
+            path = self.note_path(item, taken)
+            taken.add(path)
+            source = self.vault / path
+            if source.exists():
+                existing, body = split_frontmatter(source.read_text())
+                self.report['tasks_updated'] += 1
+            else:
+                existing, body = self.inherited(item), self.body_for(item)
+                self.report['tasks_new'] += 1
+            meta = self.task_meta(item, existing)
+            if not meta.get('owner') and meta.get('status') != self.done_column(item):
+                self.report['without_owner'].append({'task': item['task']['title'], 'boards': item['boards'],
+                                                     'status': meta.get('status') or '(конфликт)'})
+            for person in ([meta['owner']] if isinstance(meta.get('owner'), str) else meta.get('owner') or []):
+                self.report['owners'][person] = self.report['owners'].get(person, 0) + 1
+            item['path'] = path
+            files[path] = render(meta, body)
+        self.report['tasks'] = len(resolved)
+        return files
+
+    def write_boards(self):
+        files = {}
+        summary_projects = []
+        for info in self.board_info:
+            if not info['summary'] and self.workstream_of_board(info['direction']) not in summary_projects:
+                summary_projects.append(self.workstream_of_board(info['direction']))
+        for info in self.board_info:
+            rel = info['path'].resolve().relative_to(self.vault.resolve()).as_posix()
+            old = info['path'].read_text()
+            archived_meta, archived_body = split_frontmatter(old)
+            archived_meta.pop('layout', None)
+            archived_meta['archived'] = self.today
+            files[f'{self.archive_dir}/{info["path"].name}'] = render(archived_meta, archived_body)
+
+            meta = {k: v for k, v in info['meta'].items() if k not in ('kanban-plugin', 'layout')}
+            meta['title'] = info['title']
+            meta['layout'] = self.layout
+            if info['summary']:
+                meta['tasks_filter'] = {self.field: summary_projects}
+            else:
+                meta['tasks_filter'] = {self.field: self.workstream_of_board(info['direction'])}
+            meta['tasks_columns'] = info['columns']
+            meta['done'] = info['columns'][-1:]
+            if self.metrics:
+                meta['metrics'] = self.metrics
+            meta['menu_order'] = self.board_info.index(info) + 1
+            if info['title'] in self.menu:
+                title, _, hint = self.menu[info['title']].partition('|')
+                meta['menu_title'] = title
+                if hint:
+                    meta['menu_hint'] = hint
+            body = (f'Доска показывает заметки задач по полю `{self.field}`. '
+                    f'Прежняя доска с карточками лежит в [[{self.archive_dir}/{info["path"].stem}]].')
+            files[rel] = render(meta, body)
+
+        if self.people_dir:
+            summary = next((info for info in self.board_info if info['summary']), self.board_info[0])
+            for person in sorted(self.report['owners']):
+                meta = {k: v for k, v in summary['meta'].items() if k == 'subgraphs'}
+                meta['title'] = person
+                meta['layout'] = self.layout
+                meta['tasks_filter'] = {'owner': person}
+                meta['tasks_columns'] = summary['columns']
+                meta['done'] = summary['columns'][-1:]
+                if self.metrics:
+                    meta['metrics'] = self.metrics
+                files[f'{self.people_dir}/{safe_name(person)}.md'] = render(meta, f'Все задачи, где ответственный — {person}.')
+            self.report['people_boards'] = len(self.report['owners'])
+
+        if self.index:
+            sample = self.board_info[0]['meta']
+            meta = {k: v for k, v in sample.items() if k == 'subgraphs'}
+            meta['title'] = pathlib.Path(self.index).stem
+            meta['layout'] = 'boards'
+            files[self.index] = render(meta, 'Все доски задач.')
+        return files
+
+    def run(self, dry_run):
+        self.read()
+        resolved = self.resolve()
+        files = self.write_tasks(resolved)
+        files.update(self.write_boards())
+        self.report['files'] = len(files)
+        if not dry_run:
+            for rel, text in files.items():
+                target = self.out / rel
+                target.parent.mkdir(parents=True, exist_ok=True)
+                target.write_text(text)
+        return self.report
+
+
+def print_report(report, dry_run):
+    out = sys.stdout
+    out.write(('Пробный прогон: ничего не записано.\n' if dry_run else 'Записано.\n'))
+    out.write(f'Досок: {len(report["boards"])}, карточек прочитано: {report["cards_read"]}\n')
+    for b in report['boards']:
+        out.write(f'  {"[сводная] " if b["summary"] else ""}{b["board"]}: {b["cards"]}\n')
+    out.write(f'Задач: {report["tasks"]} (новых заметок {report["tasks_new"]}, дополнено существующих {report["tasks_updated"]})\n')
+    out.write(f'Дубликатов слито: {report["duplicates_merged"]}\n')
+    if report['direction_aliases']:
+        out.write('Направления со сводной сопоставлены с досками: ' + ', '.join(f'{k} → {v}' for k, v in report['direction_aliases'].items()) + '\n')
+    out.write(f'Конфликтов статуса: {len(report["status_conflicts"])}\n')
+    for c in report['status_conflicts']:
+        where = '; '.join(f'«{col}» на {", ".join(boards)}' for col, boards in c['columns'].items())
+        out.write(f'  - {c["task"]}: {where}\n')
+    if report['field_conflicts']:
+        out.write(f'Конфликтов полей: {len(report["field_conflicts"])}\n')
+        for c in report['field_conflicts']:
+            out.write(f'  - {c["task"]}: {c["field"]} в заметке «{c["note"]}», на доске «{c["board"]}»\n')
+    out.write(f'Открытых задач без ответственного: {len(report["without_owner"])}\n')
+    out.write('Ответственные (как записаны на карточках): ' + ', '.join(f'{k} ({v})' for k, v in sorted(report['owners'].items())) + '\n')
+    if report.get('people_boards'):
+        out.write(f'Досок людей: {report["people_boards"]}\n')
+    out.write(f'Файлов к записи: {report["files"]}\n')
+
+
+def main():
+    parser = argparse.ArgumentParser(description='Turn kanban-plugin boards into task notes and query boards.')
+    parser.add_argument('boards', nargs='+')
+    parser.add_argument('--vault', required=True)
+    parser.add_argument('--summary')
+    parser.add_argument('--out')
+    parser.add_argument('--dry-run', action='store_true')
+    parser.add_argument('--direction-pattern', default=r'.+? — (.+?) — (?:доска|board)')
+    parser.add_argument('--tasks-dir', default='tasks')
+    parser.add_argument('--archive-dir', default='archive/kanban')
+    parser.add_argument('--index')
+    parser.add_argument('--people-dir', help='folder for one board per owner')
+    parser.add_argument('--metric', action='append', default=[], help='"label=flag" for the board header, "label=flag!" paints it as a risk; repeat')
+    parser.add_argument('--menu', action='append', default=[], help='"board title=menu title|hint" for the board menu')
+    parser.add_argument('--field', default='project', help='the task field a board filters by')
+    parser.add_argument('--layout', default='tasks', help='layout of the rewritten boards')
+    parser.add_argument('--today', default=datetime.date.today().isoformat())
+    parser.add_argument('--json', help='write the full report as JSON to this file')
+    args = parser.parse_args()
+    if not args.dry_run and not args.out:
+        parser.error('--out is required unless --dry-run')
+    report = Migration(args).run(args.dry_run)
+    print_report(report, args.dry_run)
+    if args.json:
+        pathlib.Path(args.json).write_text(json.dumps(report, ensure_ascii=False, indent=1))
+
+
+if __name__ == '__main__':
+    main()

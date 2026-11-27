@@ -41,6 +41,7 @@ if [ -n "${TRIP2G_BIN:-}" ]; then
 fi
 
 python3 -m unittest discover -s "$repo/skills/tasks-board/tests" || failed=1
+python3 -m unittest discover -s "$repo/tests/migrate" || failed=1
 
 "$repo/scripts/build.sh" > /dev/null
 NODE_PATH="$mam/node_modules" node "$repo/ui/app/-/node.test.js" || failed=1
