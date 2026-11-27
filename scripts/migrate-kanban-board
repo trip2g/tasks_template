@@ -196,15 +196,18 @@ class Migration:
         self.today = args.today
         self.layout = args.layout
         self.field = args.field
-        self.people_dir = args.people_dir
         self.metrics = [metric_of(m) for m in args.metric]
+        self.explicit_alias = dict(item.split('=', 1) for item in args.alias)
+        self.alias = {}
+        self.handles = {}
         self.menu = dict(item.split('=', 1) for item in args.menu)
         self.board_label = {}
         self.entries = collections.OrderedDict()
         self.board_info = []
         self.report = {'boards': [], 'cards_read': 0, 'tasks': 0, 'tasks_new': 0, 'tasks_updated': 0,
                        'duplicates_merged': 0, 'status_conflicts': [], 'field_conflicts': [],
-                       'without_owner': [], 'owners': {}, 'direction_aliases': {}}
+                       'without_owner': [], 'owners': {}, 'direction_aliases': {},
+                       'aliases': [], 'alias_doubts': []}
 
     def read(self):
         for path in self.boards:
@@ -307,11 +310,11 @@ class Migration:
         else:
             meta.pop('status', None)
             meta['status_conflict'] = list(item['statuses'])
-        owners = task['owners']
+        owners = self.canonical_owners(task['owners'])
         if owners:
             had = existing.get('owner')
             value = owners[0] if len(owners) == 1 else owners
-            had_people = owners_of(had) if isinstance(had, str) else had
+            had_people = self.canonical_owners(owners_of(had) if isinstance(had, str) else (had or []))
             if had and had_people != owners and not (isinstance(had, str) and had in owners):
                 self.report['field_conflicts'].append({'task': task['title'], 'field': 'owner', 'note': had, 'board': value})
             else:
@@ -321,7 +324,7 @@ class Migration:
                 meta[field] = task[field]
         if task.get('kind') and not meta.get('task_type'):
             meta['task_type'] = task['kind']
-        handles = task.get('handles') or []
+        handles = [self.handles.get(name, '') for name in owners]
         if meta.get('owner') and any(handles):
             meta['owner_telegram'] = handles[0] if len(handles) == 1 else handles
         for field in ('due_time', 'wekan_batch', 'stage_hint'):
@@ -416,20 +419,6 @@ class Migration:
                     f'Прежняя доска с карточками лежит в [[{self.archive_dir}/{info["path"].stem}]].')
             files[rel] = render(meta, body)
 
-        if self.people_dir:
-            summary = next((info for info in self.board_info if info['summary']), self.board_info[0])
-            for person in sorted(self.report['owners']):
-                meta = {k: v for k, v in summary['meta'].items() if k == 'subgraphs'}
-                meta['title'] = person
-                meta['layout'] = self.layout
-                meta['tasks_filter'] = {'owner': person}
-                meta['tasks_columns'] = summary['columns']
-                meta['done'] = summary['columns'][-1:]
-                if self.metrics:
-                    meta['metrics'] = self.metrics
-                files[f'{self.people_dir}/{safe_name(person)}.md'] = render(meta, f'Все задачи, где ответственный — {person}.')
-            self.report['people_boards'] = len(self.report['owners'])
-
         if self.index:
             sample = self.board_info[0]['meta']
             meta = {k: v for k, v in sample.items() if k == 'subgraphs'}
@@ -438,9 +427,50 @@ class Migration:
             files[self.index] = render(meta, 'Все доски задач.')
         return files
 
+    def people_of(self, resolved):
+        names = collections.Counter()
+        handles = {}
+        for item in resolved:
+            task = item['task']
+            for i, name in enumerate(task['owners']):
+                names[name] += 1
+                handle = (task.get('handles') or [''] * len(task['owners']))[i] if i < len(task.get('handles') or []) else ''
+                if handle:
+                    handles.setdefault(name, handle)
+        alias = dict(self.explicit_alias)
+        for name in names:
+            if name in alias or ' ' in name:
+                continue
+            fuller = [other for other in names if other != name and other.split(' ')[0] == name]
+            if len(fuller) == 1:
+                alias[name] = fuller[0]
+                self.report['aliases'].append({'from': name, 'to': fuller[0], 'how': 'то же имя, одна фамилия'})
+        for name in names:
+            if name in alias:
+                continue
+            initials = re.fullmatch(r'(\S+)\s+([А-ЯA-Z])\.(?:\s*[А-ЯA-Z]\.)?', name)
+            if not initials:
+                continue
+            for other in names:
+                if other != name and ' ' not in other and other.startswith(initials.group(2)):
+                    self.report['alias_doubts'].append({'a': name, 'b': other, 'why': 'инициал совпадает с именем'})
+        for source, target in self.explicit_alias.items():
+            self.report['aliases'].append({'from': source, 'to': target, 'how': 'задано вручную'})
+        self.alias = alias
+        self.handles = {alias.get(k, k): v for k, v in handles.items()}
+
+    def canonical_owners(self, owners):
+        result = []
+        for name in owners:
+            name = self.alias.get(name, name)
+            if name not in result:
+                result.append(name)
+        return result
+
     def run(self, dry_run):
         self.read()
         resolved = self.resolve()
+        self.people_of(resolved)
         files = self.write_tasks(resolved)
         files.update(self.write_boards())
         self.report['files'] = len(files)
@@ -470,10 +500,12 @@ def print_report(report, dry_run):
         out.write(f'Конфликтов полей: {len(report["field_conflicts"])}\n')
         for c in report['field_conflicts']:
             out.write(f'  - {c["task"]}: {c["field"]} в заметке «{c["note"]}», на доске «{c["board"]}»\n')
+    for a in report['aliases']:
+        out.write(f'Слито: «{a["from"]}» → «{a["to"]}» ({a["how"]})\n')
+    for d in report['alias_doubts']:
+        out.write(f'Возможно, один человек, не слито: «{d["a"]}» и «{d["b"]}» ({d["why"]})\n')
     out.write(f'Открытых задач без ответственного: {len(report["without_owner"])}\n')
     out.write('Ответственные (как записаны на карточках): ' + ', '.join(f'{k} ({v})' for k, v in sorted(report['owners'].items())) + '\n')
-    if report.get('people_boards'):
-        out.write(f'Досок людей: {report["people_boards"]}\n')
     out.write(f'Файлов к записи: {report["files"]}\n')
 
 
@@ -488,7 +520,7 @@ def main():
     parser.add_argument('--tasks-dir', default='tasks')
     parser.add_argument('--archive-dir', default='archive/kanban')
     parser.add_argument('--index')
-    parser.add_argument('--people-dir', help='folder for one board per owner')
+    parser.add_argument('--alias', action='append', default=[], help='"name on cards=person" merges two spellings of one person; repeat')
     parser.add_argument('--metric', action='append', default=[], help='"label=flag" for the board header, "label=flag!" paints it as a risk; repeat')
     parser.add_argument('--menu', action='append', default=[], help='"board title=menu title|hint" for the board menu')
     parser.add_argument('--field', default='project', help='the task field a board filters by')
