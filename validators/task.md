@@ -21,7 +21,7 @@ local conflict = values(std.get(meta, 'status_conflict', null));
   if !has(k) && !(k == 'status' && std.length(conflict) > 0)
 ] + (
   if std.length(conflict) > 0
-  then [{level: 'error', msg: 'the boards disagreed on the status: ' + std.join(' / ', conflict) + '; set status and remove status_conflict'}]
+  then [{level: 'warning', msg: 'the boards disagreed on the status: ' + std.join(' / ', conflict) + '; set status and remove status_conflict'}]
   else []
 ) + (
   if status != '' && std.length(statuses) > 0 && !std.member(statuses, status)

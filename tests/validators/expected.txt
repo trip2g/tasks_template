@@ -6,4 +6,4 @@ tasks/loose.md:0: warning validate validators/task.md: due "next week" is not a 
 tasks/loose.md:0: warning validate validators/task.md: owner "Kim" is not in the list of people
 tasks/stuck.md:0: critical validate validators/task.md: status "Blocked" needs a reason in blocked
 tasks/torn.md:0: critical validate validators/task.md: blocked must be text: the reason the task cannot move
-tasks/torn.md:0: critical validate validators/task.md: the boards disagreed on the status: Inbox / Doing; set status and remove status_conflict
+tasks/torn.md:0: warning validate validators/task.md: the boards disagreed on the status: Inbox / Doing; set status and remove status_conflict

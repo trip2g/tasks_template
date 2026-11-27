@@ -23,5 +23,8 @@ its check off. Fill them with `scripts/task-validator-lists`.
 | `metrics[i] needs a label / a flag` (board) | each entry is `{label, flag}` |
 | `metrics[i] flag "X" is not computed by the board query` (board) | add the flag to the query and to `flags` in the validator, or fix the name |
 
-A note with an error still saves and publishes; the message stays until the
-note is fixed.
+A note with an error still saves and publishes, and the message stays until
+the note is fixed. But an error makes the sync CLI exit with code 1, and a
+script that syncs may stop on that. So errors are kept for notes that are
+broken; a pending decision, such as a status the boards disagreed on, is a
+warning. `trip2g lint` fails on both.
