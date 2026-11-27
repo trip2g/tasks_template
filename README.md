@@ -11,7 +11,8 @@ changes one line in the task note.
   (overdue in red), the reason it is blocked and a pause mark; a click opens
   the task note beside the board; dragging a card sets its `status`.
 - `layout: boards` — every board on one page, with counts per status,
-  overdue, without owner, without due date; boards that need a decision first.
+  overdue, without owner, without due date; boards that need a decision first;
+  a line of people, each linking to a board filtered to them.
 - `skills/tasks-board/` — a skill for an AI agent that keeps the same notes:
   create a task, set a status, create a project board, and a lint for the
   nightly summary.
@@ -88,12 +89,44 @@ tasks_filter:
 | `tasks_columns` | `[Inbox, Planned, In progress, Blocked, Done]` | the columns, left to right; **the last one is the done column** |
 | `tasks_done_days` | `14` | done cards older than this many days (by `done`, else `due`; undated ones too) fold under «Done earlier» |
 | `tasks_query` | `"[[tasks_board]]"` | the note query that picks the cards |
+| `done` | the last column | statuses that count as finished, e.g. `[Done, Dropped]` |
+| `metrics` | Active, Overdue, Blocked | the counts above the columns, see Metrics below |
 
 The filter is data: the board hands it to the query as `params.filter`, and
 the same query serves every board.
 
 A task whose status is not one of the board's columns is not hidden: it shows
 in an extra column, «Not a column of this board», and cannot be dropped into.
+
+### Metrics
+
+Above the columns the board counts the cards on screen: with an owner
+picked or a search typed, the numbers follow. The board query marks each
+task with `flags`, computed in Jsonnet: `active` (its status is not in
+`done`), `overdue` (a date before today, not done), `blocked` (a reason in
+`blocked`, not done). The board's `metrics` picks which flags to show and
+names them:
+
+```yaml
+metrics:
+  - label: Open
+    flag: active
+  - label: Late
+    flag: overdue
+    risk: true
+```
+
+`risk: true` paints a non-zero count red. A new count is two lines: one
+flag in `flags(n)` in `queries/tasks_board.md`, for example
+`no_owner: open && field(n, 'owner') == '',`, and one entry in the board's
+`metrics`. One query serves the cards and the counts, because trip2g runs
+at most two note queries per request.
+
+### One person's tasks
+
+A click on a name on a card filters the board to that person and writes
+`?owner=<name>` into the address; a second click, or «Everyone» in the
+owner list, clears it. A link with `?owner=` opens the board filtered.
 
 ### Your own columns
 
@@ -157,11 +190,33 @@ layout: boards
 ---
 ```
 
-One row per note with `layout: tasks`: counts per status, overdue, without
-owner, without a due date (absent or not a date), and **needs a decision** —
+One row per note with `layout: tasks`, and per note of any layout that
+sets `tasks_columns` (a board drawn by a layout of your own): counts per
+status, overdue, without owner, without a due date (absent or not a date), and **needs a decision** —
 open tasks that are blocked, overdue or have no owner. Boards with the most
 of those come first. `boards_query: "[[my_index]]"` replaces the default
 `[[boards_index]]`.
+
+## Validators
+
+`validators/task.md` checks a task note and `validators/board.md` a board;
+`patches/tasks_validate.md` attaches them to every task and board, so no
+note lists them itself. Copy the three notes into the vault and fill the
+task validator's lists:
+
+```bash
+scripts/task-validator-lists validators/task.md \
+  --status Inbox --status Planned --status "In progress" --status Blocked --status Done \
+  --person Leo --person Maya --blocked-status Blocked
+```
+
+A task is flagged for a status no board has, a due date that is not
+`YYYY-MM-DD`, an owner outside the list, a blocking status without a reason
+in `blocked`, and a `status_conflict` left by a migration. A board is
+flagged for `done` that is not a list of its columns and for a `metrics`
+entry without a label or with a flag the board query does not compute.
+The messages show in the sync output, in the admin dashboard and in
+`trip2g lint`. An empty list switches its check off.
 
 ## Editing rights
 
@@ -205,6 +260,21 @@ python3 tasks.py clean --placeholder "not assigned" --placeholder "none" --dry-r
 
 It refuses an invented due date and refuses to close a task without
 `--evidence`. See `skills/tasks-board/SKILL.md`.
+
+## From kanban-plugin boards
+
+`scripts/migrate-kanban-board` turns obsidian-kanban board notes (a column
+per heading, a card per line) into task notes and query boards: one task per
+card, duplicates across boards merged by link target, a status two boards
+disagree on listed instead of guessed. Run it with `--dry-run` first. See
+`skills/tasks-board/references/migration.md`.
+
+## The skill package
+
+`scripts/pack-skill.sh` assembles `dist/skill/tasks-board/`: the skill
+(`SKILL.md`, `references/`, `scripts/`) and the app it brings, `layouts/`
+for `_layouts/` and `projects/` (queries, validators, their patch) for the
+knowledge base. A box's skill-install installs it as a skill with an app.
 
 ## How it is built
 

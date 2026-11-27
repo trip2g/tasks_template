@@ -50,3 +50,14 @@
 	padding-left: 0;
 	padding-right: 0;
 }
+
+[trip2gtasks_boards_people] {
+	flex-wrap: wrap;
+	align-items: baseline;
+	gap: var(--mol_gap_text);
+	padding: 0 var(--mol_gap_text) var(--mol_gap_block);
+}
+
+[trip2gtasks_boards_people_label] {
+	color: var(--mol_theme_shade);
+}

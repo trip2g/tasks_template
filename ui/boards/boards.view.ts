@@ -13,6 +13,7 @@ namespace $.$$ {
 		no_due?: number
 		blocked?: number
 		needs_decision: number
+		owners?: string[]
 	}
 
 	export class $trip2gtasks_boards extends $.$trip2gtasks_boards {
@@ -59,7 +60,25 @@ namespace $.$$ {
 		override boards_body() {
 			if (this.problem_text()) return [this.Problem()]
 			if (!this.boards().length) return [this.Empty()]
-			return [this.Rows()]
+			return [...this.people().length ? [this.People()] : [], this.Rows()]
+		}
+
+		@$mol_mem
+		people() {
+			return $trip2gtasks_boards_people(this.boards())
+		}
+
+		override people_views() {
+			return [this.People_label(), ...this.people().map(person => this.Person(person.name))]
+		}
+
+		override person_uri(name: string) {
+			const person = this.people().find(p => p.name === name)!
+			return $trip2gtasks_env_url($trip2gtasks_boards_person_uri(person.home, name))
+		}
+
+		override person_name(name: string) {
+			return name
 		}
 
 		@$mol_mem

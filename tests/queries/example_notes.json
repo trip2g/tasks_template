@@ -239,5 +239,26 @@
    "disposition": "active",
    "free": true
   }
+ },
+ {
+  "path": "boards/Newsletter (own layout).md",
+  "path_id": 16,
+  "version_id": 16,
+  "title": "Newsletter, own layout",
+  "permalink": "/boards/newsletter_own_layout",
+  "meta": {
+   "title": "Newsletter, own layout",
+   "layout": "kanban",
+   "tasks_filter": {
+    "project": "Newsletter"
+   },
+   "tasks_columns": [
+    "Inbox",
+    "Planned",
+    "In progress",
+    "Done"
+   ],
+   "free": true
+  }
  }
 ]

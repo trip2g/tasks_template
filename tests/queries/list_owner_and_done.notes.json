@@ -1,0 +1,5 @@
+[
+ {"path": "tasks/a.md", "title": "Pair on the checkout", "permalink": "/tasks/a", "meta": {"type": "task", "status": "Doing", "owner": ["Maya", "Leo"], "due": "2026-11-20"}},
+ {"path": "tasks/b.md", "title": "Old idea", "permalink": "/tasks/b", "meta": {"type": "task", "status": "Dropped", "owner": "Leo", "due": "2026-11-01"}},
+ {"path": "tasks/c.md", "title": "Someone else's", "permalink": "/tasks/c", "meta": {"type": "task", "status": "Inbox", "owner": "Sam", "blocked": "waiting"}}
+]

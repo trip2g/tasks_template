@@ -14,6 +14,11 @@
          "done": "2026-10-02",
          "due": "",
          "due_date": false,
+         "flags": {
+            "active": false,
+            "blocked": false,
+            "overdue": false
+         },
          "overdue": false,
          "owner": "Leo",
          "path": "tasks/website/Choose a font pair.md",
@@ -28,6 +33,11 @@
          "done": "",
          "due": "after the launch",
          "due_date": false,
+         "flags": {
+            "active": true,
+            "blocked": false,
+            "overdue": false
+         },
          "overdue": false,
          "owner": "Maya",
          "path": "tasks/website/Collect testimonials.md",
@@ -42,6 +52,11 @@
          "done": "",
          "due": "2026-11-28",
          "due_date": true,
+         "flags": {
+            "active": true,
+            "blocked": false,
+            "overdue": false
+         },
          "overdue": false,
          "owner": "Maya",
          "path": "tasks/website/Draft the pricing page.md",
@@ -56,6 +71,11 @@
          "done": "",
          "due": "2026-11-21",
          "due_date": true,
+         "flags": {
+            "active": true,
+            "blocked": false,
+            "overdue": true
+         },
          "overdue": true,
          "owner": "",
          "path": "tasks/website/Fix the contact form on mobile.md",
@@ -70,6 +90,11 @@
          "done": "",
          "due": "2026-12-15",
          "due_date": true,
+         "flags": {
+            "active": true,
+            "blocked": false,
+            "overdue": false
+         },
          "overdue": false,
          "owner": "Leo",
          "path": "tasks/website/Move the blog to the new domain.md",
@@ -84,6 +109,11 @@
          "done": "2026-11-19",
          "due": "2026-11-18",
          "due_date": true,
+         "flags": {
+            "active": false,
+            "blocked": false,
+            "overdue": false
+         },
          "overdue": false,
          "owner": "Maya",
          "path": "tasks/website/Publish the accessibility statement.md",
@@ -98,6 +128,11 @@
          "done": "",
          "due": "2026-11-20",
          "due_date": true,
+         "flags": {
+            "active": true,
+            "blocked": true,
+            "overdue": true
+         },
          "overdue": true,
          "owner": "Leo",
          "path": "tasks/website/Replace the hero photo.md",

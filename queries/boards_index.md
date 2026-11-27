@@ -3,7 +3,7 @@ type: note-query
 free: true
 ---
 
-Every board (`layout: tasks`) with its counts, boards that need a decision first. A board with its own `tasks_query` is listed without counts: its cards are whatever that query returns.
+Every board (`layout: tasks`, or any note with `tasks_columns`, whatever its layout) with its counts and the people who own its tasks, boards that need a decision first. A board with its own `tasks_query` is listed without counts: its cards are whatever that query returns.
 
 Today is the site's date, `now.date`; a page may pass `today` (`YYYY-MM-DD`) for a trip2g that has no `now` yet.
 
@@ -18,10 +18,11 @@ local isDate(s) = std.length(s) == 10 && std.substr(s, 4, 1) == '-' && std.subst
 
 local tasks = [n for n in notes if field(n, 'type') == 'task'];
 
+local values(v) = if std.isArray(v) then [text(x) for x in v] else [text(v)];
 local matches(filter, n) = std.all([
-  local want = filter[k];
-  local have = field(n, k);
-  if std.isArray(want) then std.member([text(w) for w in want], have) else have == text(want)
+  local want = values(filter[k]);
+  local have = values(std.get(n.meta, k, null));
+  std.length([h for h in have if std.member(want, h)]) > 0
   for k in std.objectFields(filter)
 ]);
 
@@ -51,6 +52,7 @@ local summary(b) =
     no_due: std.length([n for n in open if !isDate(field(n, 'due'))]),
     blocked: std.length([n for n in open if field(n, 'blocked') != '']),
     needs_decision: std.length([n for n in open if decision(n)]),
+    owners: std.set(std.flattenArrays([[o for o in values(std.get(n.meta, 'owner', null)) if o != ''] for n in mine])),
   };
 
 local custom(b) = {
@@ -61,7 +63,7 @@ local custom(b) = {
   needs_decision: -1,
 };
 
-local boards = [n for n in notes if field(n, 'layout') == 'tasks'];
+local boards = [n for n in notes if field(n, 'layout') == 'tasks' || std.isArray(std.get(n.meta, 'tasks_columns', null))];
 local rows = [
   if std.member(['', defaultQuery], field(b, 'tasks_query')) then summary(b) else custom(b)
   for b in boards

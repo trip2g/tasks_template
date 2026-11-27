@@ -193,3 +193,13 @@
 	padding-top: 0;
 	padding-bottom: 0;
 }
+
+[trip2gtasks_board_metrics] {
+	flex-wrap: wrap;
+	gap: var(--mol_gap_space);
+	padding-bottom: var(--mol_gap_block);
+}
+
+[trip2gtasks_board_owner_mark] {
+	cursor: pointer;
+}

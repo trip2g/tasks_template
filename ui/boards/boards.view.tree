@@ -9,6 +9,14 @@ $trip2gtasks_boards $mol_page
 		text <= problem_text \
 	Empty $mol_paragraph
 		title <= empty_label @ \No note has layout: tasks yet.
+	People $mol_view
+		sub <= people_views /
+	People_label $mol_view
+		sub / <= people_label @ \People:
+	Person* $mol_link
+		uri <= person_uri* \
+		target \_top
+		sub / <= person_name* \
 	Rows $mol_list
 		rows <= rows /
 	Row* $mol_link
