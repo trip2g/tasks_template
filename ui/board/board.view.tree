@@ -18,6 +18,11 @@ $trip2gtasks_board $mol_book2
 		title <= problem_title \
 		text <= problem_text \
 		tone <= problem_tone \bad
+	Metrics $mol_view
+		sub <= metric_views /
+	Metric* $airkit_pill
+		title <= metric_title* \
+		tone <= metric_tone* \neutral
 	Signin $mol_paragraph
 		title @ \Sign in to move cards: the sign-in button is in the top right corner.
 	Cancelled $mol_paragraph
@@ -87,6 +92,9 @@ $trip2gtasks_board $mol_book2
 				options <= status_options *
 			<= Task_frame $mol_frame
 				uri <= task_uri
+	active_label @ \Active
+	overdue_metric_label @ \Overdue
+	blocked_metric_label @ \Blocked
 	everyone_label @ \Everyone
 	no_owner_label @ \No owner
 	overdue_label @ \Overdue: {due}

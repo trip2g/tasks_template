@@ -16,5 +16,8 @@
 	"$trip2gtasks_board_refused_label": "Перемещение не сохранено",
 	"$trip2gtasks_board_saved_warning_label": "Сохранено с предупреждением",
 	"$trip2gtasks_board_signed_out_label": "Сессия закончилась, поэтому сайт не сохранил перемещение. Войдите и перетащите карточку снова.",
-	"$trip2gtasks_board_swipe_label": "Листайте вбок: колонок всего {count}."
+	"$trip2gtasks_board_swipe_label": "Листайте вбок: колонок всего {count}.",
+	"$trip2gtasks_board_active_label": "Активные",
+	"$trip2gtasks_board_overdue_metric_label": "Просрочено",
+	"$trip2gtasks_board_blocked_metric_label": "Блокеры"
 }

@@ -88,12 +88,38 @@ tasks_filter:
 | `tasks_columns` | `[Inbox, Planned, In progress, Blocked, Done]` | the columns, left to right; **the last one is the done column** |
 | `tasks_done_days` | `14` | done cards older than this many days (by `done`, else `due`; undated ones too) fold under «Done earlier» |
 | `tasks_query` | `"[[tasks_board]]"` | the note query that picks the cards |
+| `done` | the last column | statuses that count as finished, e.g. `[Done, Dropped]` |
+| `metrics` | Active, Overdue, Blocked | the counts above the columns, see Metrics below |
 
 The filter is data: the board hands it to the query as `params.filter`, and
 the same query serves every board.
 
 A task whose status is not one of the board's columns is not hidden: it shows
 in an extra column, «Not a column of this board», and cannot be dropped into.
+
+### Metrics
+
+Above the columns the board counts the cards on screen: with an owner
+picked or a search typed, the numbers follow. The board query marks each
+task with `flags`, computed in Jsonnet: `active` (its status is not in
+`done`), `overdue` (a date before today, not done), `blocked` (a reason in
+`blocked`, not done). The board's `metrics` picks which flags to show and
+names them:
+
+```yaml
+metrics:
+  - label: Open
+    flag: active
+  - label: Late
+    flag: overdue
+    risk: true
+```
+
+`risk: true` paints a non-zero count red. A new count is two lines: one
+flag in `flags(n)` in `queries/tasks_board.md`, for example
+`no_owner: open && field(n, 'owner') == '',`, and one entry in the board's
+`metrics`. One query serves the cards and the counts, because trip2g runs
+at most two note queries per request.
 
 ### Your own columns
 

@@ -13,6 +13,7 @@ namespace $.$$ {
 		blocked: string
 		disposition: string
 		done: string
+		flags?: Record<string, boolean>
 	}
 
 	export type $trip2gtasks_board_data = {
@@ -71,6 +72,9 @@ namespace $.$$ {
 
 			const columns = meta.tasks_columns
 			if (Array.isArray(columns) && columns.length > 0) params.columns = columns.map(String)
+
+			const done = meta.done
+			if (Array.isArray(done) && done.length > 0) params.done = done.map(String)
 
 			return params
 		}
@@ -132,6 +136,7 @@ namespace $.$$ {
 			if (this.board_error()) return [this.Problem()]
 
 			return [
+				this.Metrics(),
 				...this.notice() ? [this.Problem()] : [],
 				...this.editable() ? [] : [this.Signin()],
 				this.Swipe_hint(),
@@ -181,6 +186,32 @@ namespace $.$$ {
 				const haystack = [card.title, card.owner, card.project, card.blocked, card.status].join('\n').toLowerCase()
 				return haystack.includes(query)
 			})
+		}
+
+		@$mol_mem
+		metrics() {
+			return $trip2gtasks_board_metrics(this.meta().metrics, this.visible())
+		}
+
+		override metric_views() {
+			return this.metrics().map((_, index) => this.Metric(index))
+		}
+
+		metric_label(flag: string) {
+			if (flag === 'active') return this.active_label()
+			if (flag === 'overdue') return this.overdue_metric_label()
+			if (flag === 'blocked') return this.blocked_metric_label()
+			return flag
+		}
+
+		override metric_title(index: number) {
+			const metric = this.metrics()[index]
+			return `${metric.label || this.metric_label(metric.flag)}: ${metric.count}`
+		}
+
+		override metric_tone(index: number) {
+			const metric = this.metrics()[index]
+			return metric.risk && metric.count > 0 ? 'bad' : 'neutral'
 		}
 
 		@$mol_mem
