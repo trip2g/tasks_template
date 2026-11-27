@@ -157,8 +157,9 @@ layout: boards
 ---
 ```
 
-One row per note with `layout: tasks`: counts per status, overdue, without
-owner, without a due date (absent or not a date), and **needs a decision** —
+One row per note with `layout: tasks`, and per note of any layout that
+sets `tasks_columns` (a board drawn by a layout of your own): counts per
+status, overdue, without owner, without a due date (absent or not a date), and **needs a decision** —
 open tasks that are blocked, overdue or have no owner. Boards with the most
 of those come first. `boards_query: "[[my_index]]"` replaces the default
 `[[boards_index]]`.

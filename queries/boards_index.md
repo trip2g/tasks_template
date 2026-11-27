@@ -3,7 +3,7 @@ type: note-query
 free: true
 ---
 
-Every board (`layout: tasks`) with its counts, boards that need a decision first. A board with its own `tasks_query` is listed without counts: its cards are whatever that query returns.
+Every board (`layout: tasks`, or any note with `tasks_columns`, whatever its layout) with its counts, boards that need a decision first. A board with its own `tasks_query` is listed without counts: its cards are whatever that query returns.
 
 Today is the site's date, `now.date`; a page may pass `today` (`YYYY-MM-DD`) for a trip2g that has no `now` yet.
 
@@ -61,7 +61,7 @@ local custom(b) = {
   needs_decision: -1,
 };
 
-local boards = [n for n in notes if field(n, 'layout') == 'tasks'];
+local boards = [n for n in notes if field(n, 'layout') == 'tasks' || std.isArray(std.get(n.meta, 'tasks_columns', null))];
 local rows = [
   if std.member(['', defaultQuery], field(b, 'tasks_query')) then summary(b) else custom(b)
   for b in boards

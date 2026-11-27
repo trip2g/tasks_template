@@ -66,6 +66,37 @@
       "total": 3
    },
    {
+      "blocked": 0,
+      "columns": [
+         {
+            "count": 1,
+            "status": "Inbox"
+         },
+         {
+            "count": 1,
+            "status": "Planned"
+         },
+         {
+            "count": 0,
+            "status": "In progress"
+         },
+         {
+            "count": 0,
+            "status": "Done"
+         }
+      ],
+      "custom": false,
+      "needs_decision": 1,
+      "no_due": 1,
+      "no_owner": 1,
+      "outside": 1,
+      "overdue": 0,
+      "path": "boards/Newsletter (own layout).md",
+      "permalink": "/boards/newsletter_own_layout",
+      "title": "Newsletter, own layout",
+      "total": 3
+   },
+   {
       "custom": true,
       "needs_decision": -1,
       "path": "boards/Overdue.md",
