@@ -8,7 +8,9 @@ failed=0
 for query in "$repo"/tests/queries/*.query; do
 	name=$(basename "$query" .query)
 	actual=$(mktemp)
-	NOW=$(cat "$repo/tests/queries/$name.now.json" 2>/dev/null || true) "$repo/scripts/run_query.sh" "$repo/$(cat "$query")" "$repo/tests/queries/example_notes.json" "$(cat "$repo/tests/queries/$name.params.json")" > "$actual"
+	notes="$repo/tests/queries/$name.notes.json"
+	[ -e "$notes" ] || notes="$repo/tests/queries/example_notes.json"
+	NOW=$(cat "$repo/tests/queries/$name.now.json" 2>/dev/null || true) "$repo/scripts/run_query.sh" "$repo/$(cat "$query")" "$notes" "$(cat "$repo/tests/queries/$name.params.json")" > "$actual"
 	if diff -u "$repo/tests/queries/$name.expected.json" "$actual"; then
 		echo "ok   query $name"
 	else

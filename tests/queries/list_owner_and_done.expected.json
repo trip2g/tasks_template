@@ -1,0 +1,50 @@
+{
+   "columns": [
+      "Inbox",
+      "Doing",
+      "Done",
+      "Dropped"
+   ],
+   "done_column": "Dropped",
+   "tasks": [
+      {
+         "blocked": "",
+         "disposition": "active",
+         "done": "",
+         "due": "2026-11-20",
+         "due_date": true,
+         "flags": {
+            "active": true,
+            "blocked": false,
+            "overdue": true
+         },
+         "overdue": true,
+         "owner": "Maya, Leo",
+         "path": "tasks/a.md",
+         "permalink": "/tasks/a",
+         "project": "",
+         "status": "Doing",
+         "title": "Pair on the checkout"
+      },
+      {
+         "blocked": "",
+         "disposition": "active",
+         "done": "",
+         "due": "2026-11-01",
+         "due_date": true,
+         "flags": {
+            "active": false,
+            "blocked": false,
+            "overdue": false
+         },
+         "overdue": false,
+         "owner": "Leo",
+         "path": "tasks/b.md",
+         "permalink": "/tasks/b",
+         "project": "",
+         "status": "Dropped",
+         "title": "Old idea"
+      }
+   ],
+   "today": "2026-11-23"
+}

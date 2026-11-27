@@ -13,6 +13,11 @@
          "done": "",
          "due": "2026-11-25",
          "due_date": true,
+         "flags": {
+            "active": true,
+            "blocked": false,
+            "overdue": false
+         },
          "overdue": false,
          "owner": "Sam",
          "path": "tasks/newsletter/Clean the subscriber list.md",
@@ -27,6 +32,11 @@
          "done": "",
          "due": "",
          "due_date": false,
+         "flags": {
+            "active": true,
+            "blocked": false,
+            "overdue": false
+         },
          "overdue": false,
          "owner": "",
          "path": "tasks/newsletter/Pick a sending day.md",
@@ -41,6 +51,11 @@
          "done": "",
          "due": "2026-12-01",
          "due_date": true,
+         "flags": {
+            "active": true,
+            "blocked": false,
+            "overdue": false
+         },
          "overdue": false,
          "owner": "Sam",
          "path": "tasks/newsletter/Write the December issue.md",

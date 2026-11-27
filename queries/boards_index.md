@@ -18,10 +18,11 @@ local isDate(s) = std.length(s) == 10 && std.substr(s, 4, 1) == '-' && std.subst
 
 local tasks = [n for n in notes if field(n, 'type') == 'task'];
 
+local values(v) = if std.isArray(v) then [text(x) for x in v] else [text(v)];
 local matches(filter, n) = std.all([
-  local want = filter[k];
-  local have = field(n, k);
-  if std.isArray(want) then std.member([text(w) for w in want], have) else have == text(want)
+  local want = values(filter[k]);
+  local have = values(std.get(n.meta, k, null));
+  std.length([h for h in have if std.member(want, h)]) > 0
   for k in std.objectFields(filter)
 ]);
 
