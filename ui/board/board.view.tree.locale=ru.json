@@ -19,5 +19,6 @@
 	"$trip2gtasks_board_swipe_label": "Листайте вбок: колонок всего {count}.",
 	"$trip2gtasks_board_active_label": "Активные",
 	"$trip2gtasks_board_overdue_metric_label": "Просрочено",
-	"$trip2gtasks_board_blocked_metric_label": "Блокеры"
+	"$trip2gtasks_board_blocked_metric_label": "Блокеры",
+	"$trip2gtasks_board_owner_hint": "Показать только задачи этого человека"
 }

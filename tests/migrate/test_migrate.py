@@ -146,13 +146,28 @@ class MigrationTest(unittest.TestCase):
         site, _ = self.note('projects/Команда — Сайт — доска.md')
         self.assertEqual(site['metrics'], [{'label': 'Открытые', 'flag': 'active'}, {'label': 'Просрочено', 'flag': 'overdue', 'risk': True}])
 
-    def test_one_board_per_person(self):
-        report, _ = self.run_tool('--out', str(self.out), '--people-dir', 'people')
-        self.assertEqual(report['people_boards'], 3)
-        lena, _ = self.note('people/Лена.md')
-        self.assertEqual(lena['tasks_filter'], {'owner': 'Лена'})
-        self.assertEqual(lena['tasks_columns'], ['Входящие', 'В работе', 'Готово'])
-        self.assertNotIn('menu_order', lena)
+    def test_two_spellings_of_one_person_become_one_and_doubts_are_listed(self):
+        extra = self.vault / 'projects' / 'Команда — Почта — доска.md'
+        extra.write_text('''---
+kanban-plugin: basic
+---
+## Входящие
+
+- [ ] [[projects/Почта — Собрать список|Собрать список]] · **Сбор** · Лена Смирнова (`@lena`) · срок не задан
+- [ ] [[projects/Почта — Разослать|Разослать]] · **Рассылка** · Ершов О.С. · срок не задан
+''')
+        args = [sys.executable, str(TOOL), '--vault', str(self.vault), '--summary', str(self.summary),
+                '--today', '2026-11-27', '--out', str(self.out),
+                '--json', str(pathlib.Path(self.tmp.name) / 'r.json'), str(self.summary), str(self.direction), str(extra)]
+        subprocess.run(args, capture_output=True, text=True, check=True)
+        report = json.loads((pathlib.Path(self.tmp.name) / 'r.json').read_text())
+        self.assertEqual([(a['from'], a['to']) for a in report['aliases']], [('Лена', 'Лена Смирнова')])
+        self.assertEqual([(d['a'], d['b']) for d in report['alias_doubts']], [('Ершов О.С.', 'Олег')])
+        domain, _ = self.note('projects/Сайт — Купить домен.md')
+        self.assertEqual(domain['owner'], 'Лена Смирнова')
+        texts, _ = self.note('projects/Сайт — Написать тексты.md')
+        self.assertEqual(texts['owner'], ['Лена Смирнова', 'Олег'])
+        self.assertEqual(texts['owner_telegram'], ['@lena', '@oleg'])
 
 
 if __name__ == '__main__':

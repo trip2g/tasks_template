@@ -9,5 +9,6 @@
 	"$trip2gtasks_boards_status_label": "По статусам",
 	"$trip2gtasks_boards_counts_label": "Счётчики",
 	"$trip2gtasks_boards_custom_label": "Свой запрос: счётчиков нет",
-	"$trip2gtasks_boards_other_label": "другие"
+	"$trip2gtasks_boards_other_label": "другие",
+	"$trip2gtasks_boards_people_label": "Люди:"
 }

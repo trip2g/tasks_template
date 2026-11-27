@@ -174,6 +174,25 @@ namespace $.$$ {
 		}
 
 		@$mol_mem
+		override owner_filter(next?: string) {
+			if (next === undefined) return $trip2gtasks_board_owner_from($trip2gtasks_env_search())
+			if (next !== nobody) $trip2gtasks_env_replace_search($trip2gtasks_board_owner_search($trip2gtasks_env_search(), next))
+			return next
+		}
+
+		owners_of(card: $trip2gtasks_board_card) {
+			return card.owner ? card.owner.split(', ') : []
+		}
+
+		override owner_pick(path: string, event?: Event) {
+			event?.stopPropagation()
+			const owners = this.owners_of(this.card(path))
+			if (owners.length !== 1) return null
+			this.owner_filter($trip2gtasks_board_owner_toggle(this.owner_filter(), owners[0]))
+			return null
+		}
+
+		@$mol_mem
 		visible() {
 			const query = this.search().trim().toLowerCase()
 			const owner = this.owner_filter()
@@ -181,7 +200,7 @@ namespace $.$$ {
 			return this.cards().filter(card => {
 				if (card.disposition === 'cancelled') return false
 				if (owner === nobody && card.owner) return false
-				if (owner && owner !== nobody && card.owner !== owner) return false
+				if (owner && owner !== nobody && !this.owners_of(card).includes(owner)) return false
 				if (!query) return true
 				const haystack = [card.title, card.owner, card.project, card.blocked, card.status].join('\n').toLowerCase()
 				return haystack.includes(query)
@@ -216,7 +235,7 @@ namespace $.$$ {
 
 		@$mol_mem
 		owner_options() {
-			const owners = [...new Set(this.cards().map(card => card.owner).filter(Boolean))].sort()
+			const owners = [...new Set(this.cards().flatMap(card => this.owners_of(card)))].sort()
 			return {
 				'': this.everyone_label(),
 				[nobody]: this.no_owner_label(),

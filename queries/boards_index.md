@@ -3,7 +3,7 @@ type: note-query
 free: true
 ---
 
-Every board (`layout: tasks`, or any note with `tasks_columns`, whatever its layout) with its counts, boards that need a decision first. A board with its own `tasks_query` is listed without counts: its cards are whatever that query returns.
+Every board (`layout: tasks`, or any note with `tasks_columns`, whatever its layout) with its counts and the people who own its tasks, boards that need a decision first. A board with its own `tasks_query` is listed without counts: its cards are whatever that query returns.
 
 Today is the site's date, `now.date`; a page may pass `today` (`YYYY-MM-DD`) for a trip2g that has no `now` yet.
 
@@ -52,6 +52,7 @@ local summary(b) =
     no_due: std.length([n for n in open if !isDate(field(n, 'due'))]),
     blocked: std.length([n for n in open if field(n, 'blocked') != '']),
     needs_decision: std.length([n for n in open if decision(n)]),
+    owners: std.set(std.flattenArrays([[o for o in values(std.get(n.meta, 'owner', null)) if o != ''] for n in mine])),
   };
 
 local custom(b) = {

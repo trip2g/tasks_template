@@ -29,6 +29,16 @@ namespace $ {
 		return new URL(permalink, host().location?.href ?? $mol_dom_context.location.href).href
 	}
 
+	export function $trip2gtasks_env_search() {
+		return host().location?.search ?? ''
+	}
+
+	export function $trip2gtasks_env_replace_search(search: string) {
+		const target = host() as unknown as { location?: Location, history?: History }
+		if (!target.location || !target.history) return
+		target.history.replaceState(target.history.state, '', target.location.pathname + search + target.location.hash)
+	}
+
 	export function $trip2gtasks_env_lang() {
 		return host().__trip2g_settings?.ui_lang || $mol_dom_context.navigator.language.replace(/-.*/, '') || 'en'
 	}

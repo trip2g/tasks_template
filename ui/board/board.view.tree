@@ -66,6 +66,11 @@ $trip2gtasks_board $mol_book2
 	Owner_mark* $airkit_pill
 		title <= card_owner* \
 		tone <= card_owner_tone* \neutral
+		attr *
+			^
+			title <= owner_hint @ \Show only this person's tasks
+		event *
+			click? <=> owner_pick*? null
 	Due_mark* $airkit_pill
 		title <= card_due* \
 		tone <= card_due_tone* \neutral

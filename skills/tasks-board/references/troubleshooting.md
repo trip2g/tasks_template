@@ -21,8 +21,9 @@ lines a colour tag was a segment like any other. The owner is now the
 spellings in `owner`. Pick one and fix the notes; the task validator's
 people list then flags the other.
 
-**A person's name does not open a board.** There is no board with
-`tasks_filter: {owner: <that name>}`. Make one (see `boards.md`).
+**A click on a name shows no cards.** The filter matches the `owner` value
+exactly. A card with several owners shows them together and is filtered
+from the owner list above the board instead.
 
 **The board says «The task changed elsewhere».** Someone saved the note in
 between. The board reloaded it; make the change again.

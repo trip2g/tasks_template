@@ -11,7 +11,8 @@ changes one line in the task note.
   (overdue in red), the reason it is blocked and a pause mark; a click opens
   the task note beside the board; dragging a card sets its `status`.
 - `layout: boards` — every board on one page, with counts per status,
-  overdue, without owner, without due date; boards that need a decision first.
+  overdue, without owner, without due date; boards that need a decision first;
+  a line of people, each linking to a board filtered to them.
 - `skills/tasks-board/` — a skill for an AI agent that keeps the same notes:
   create a task, set a status, create a project board, and a lint for the
   nightly summary.
@@ -120,6 +121,12 @@ flag in `flags(n)` in `queries/tasks_board.md`, for example
 `no_owner: open && field(n, 'owner') == '',`, and one entry in the board's
 `metrics`. One query serves the cards and the counts, because trip2g runs
 at most two note queries per request.
+
+### One person's tasks
+
+A click on a name on a card filters the board to that person and writes
+`?owner=<name>` into the address; a second click, or «Everyone» in the
+owner list, clears it. A link with `?owner=` opens the board filtered.
 
 ### Your own columns
 

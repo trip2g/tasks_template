@@ -25,8 +25,13 @@ line on the summary board and on a project board, and the two drift apart.
    linked note gets its frontmatter filled; a card linking to an anchor
    keeps it as `source`), each old board rewritten as a query board at the
    same path (links to it keep working), the old card text under
-   `archive/kanban/`, a board per person with `--people-dir people`, the
-   page of all boards with `--index`.
+   `archive/kanban/`, the page of all boards with `--index`.
+
+Two spellings of one person («Kim» and «Kim Lee») become one when the short
+one is a first name that only one full name starts with; the report lists
+each merge. Pairs it is not sure of (a surname with initials and a first
+name with the same letter) are listed, not merged: confirm them with the
+owner and pass `--alias "Kim=Kim Lee"`.
 
 How a card line is read: the first wiki link is the task (its alias the
 title); a `` `CODE` `` before it is `code`; segments split by ` · `; a
