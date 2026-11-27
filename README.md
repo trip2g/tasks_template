@@ -190,6 +190,27 @@ open tasks that are blocked, overdue or have no owner. Boards with the most
 of those come first. `boards_query: "[[my_index]]"` replaces the default
 `[[boards_index]]`.
 
+## Validators
+
+`validators/task.md` checks a task note and `validators/board.md` a board;
+`patches/tasks_validate.md` attaches them to every task and board, so no
+note lists them itself. Copy the three notes into the vault and fill the
+task validator's lists:
+
+```bash
+scripts/task-validator-lists validators/task.md \
+  --status Inbox --status Planned --status "In progress" --status Blocked --status Done \
+  --person Leo --person Maya --blocked-status Blocked
+```
+
+A task is flagged for a status no board has, a due date that is not
+`YYYY-MM-DD`, an owner outside the list, a blocking status without a reason
+in `blocked`, and a `status_conflict` left by a migration. A board is
+flagged for `done` that is not a list of its columns and for a `metrics`
+entry without a label or with a flag the board query does not compute.
+The messages show in the sync output, in the admin dashboard and in
+`trip2g lint`. An empty list switches its check off.
+
 ## Editing rights
 
 Only a signed-in admin can move cards. Everyone else sees the board read-only

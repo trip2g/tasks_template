@@ -1,0 +1,9 @@
+boards/bad.md:0: critical validate validators/board.md: done must be a list of statuses, e.g. done: [Done]
+boards/bad.md:0: critical validate validators/board.md: metrics[0] flag "late" is not computed by the board query: active, overdue, blocked
+boards/bad.md:0: critical validate validators/board.md: metrics[1] needs a label
+tasks/loose.md:0: critical validate validators/task.md: status "Someday" is not a column of any board: Inbox, Doing, Blocked, Done
+tasks/loose.md:0: warning validate validators/task.md: due "next week" is not a date (YYYY-MM-DD), so it is never overdue
+tasks/loose.md:0: warning validate validators/task.md: owner "Kim" is not in the list of people
+tasks/stuck.md:0: critical validate validators/task.md: status "Blocked" needs a reason in blocked
+tasks/torn.md:0: critical validate validators/task.md: blocked must be text: the reason the task cannot move
+tasks/torn.md:0: critical validate validators/task.md: the boards disagreed on the status: Inbox / Doing; set status and remove status_conflict

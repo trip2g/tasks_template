@@ -31,6 +31,15 @@ if [ -n "${T2G_URL:-}" ]; then
 	python3 "$repo/tests/live_meta.py" || failed=1
 fi
 
+if [ -n "${TRIP2G_BIN:-}" ]; then
+	if "$repo/tests/validators/run.sh" | diff -u "$repo/tests/validators/expected.txt" -; then
+		echo "ok   validators"
+	else
+		echo "FAIL validators"
+		failed=1
+	fi
+fi
+
 python3 -m unittest discover -s "$repo/skills/tasks-board/tests" || failed=1
 
 "$repo/scripts/build.sh" > /dev/null
